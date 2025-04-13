@@ -1,3 +1,6 @@
 Luego de hacer el git pull o git clone, deben correr este comando en la carpeta principal de ionic (TatasApp):
 
 npm install (para instalar node_modules)
+
+COMANDOS ORIGINALES:
+ionic start TatasApp blank --type=angular
