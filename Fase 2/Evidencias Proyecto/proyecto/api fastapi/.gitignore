@@ -1,0 +1,4 @@
+# Se debe agregar el ambiente virtual de python
+# En mi caso lo nombre "venv_api", pero puede tener cualquier nombre
+
+venv_api
