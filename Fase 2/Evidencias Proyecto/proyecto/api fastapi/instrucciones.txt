@@ -1,0 +1,5 @@
+Luego del git pull o git clone, deben crear el ambiente virtual e instalar todas las dependencias necesarias con los siguientes comandos:
+
+- python -m venv ambiente_virtual (el ambiente virtual puede tener cualquier nombre)
+- ambiente_virtual\Scripts\activate
+- pip install -r requirements.txt
