@@ -1,5 +1,7 @@
-# Se debe agregar el ambiente virtual de python
-# En mi caso lo nombre "venv_api", pero puede tener cualquier nombre
-
+# Ambiente virtual y archivos de entorno
 venv_api
 ambiente_virtual
+.env
+
+# cache de python, siempre se debe ignorar
+__pycache__
