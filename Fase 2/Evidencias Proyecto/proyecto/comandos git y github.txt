@@ -1,0 +1,29 @@
+Descargar repositorio
+-git clone https://github.com/DavidGuentelicanDev/Portafolio_Grupo4_TatasApp
+
+Actualizar rama main por seguridad
+-git checkout main
+-git pull origin main
+
+Crear rama personal
+-git checkout -b tu-nombre (tu-nombre se debe reemplazar por el nombre de la rama sin espacios ni caracteres especiales)
+
+Trabajo en el repositorio local
+-git status (para revisar el estado de los archivos, todos los archivos nuevos, eliminados o modificados aparecen en rojo)
+-git add . (añade todos los archivos)
+-git status (ahora deberian aparecer en verde los cambios)
+-git commit -m "comentario entendible" (para guardar los cambios)
+
+Subir al repositorio github (ESTO SE DEBE HACER SOLAMENTE CUANDO TENGAS LISTA LA FUNCIONALIDAD COMPLETA!!!)
+-git push -u origin tu-nombre (para subir los cambios por primera vez)
+-git push (para el resto de las subidas)
+
+Actualizar repositorio git local (ESTO SOLO SE HACE LUEGO DE ACEPTAR LOS PULL REQUEST EN GITHUB)
+-git checkout main (cambiamos a rama main)
+-git pull origin main (actualizamos repo local en la rama main)
+-git checkout tu-rama (cambiamos a nuestra rama personal)
+-git merge main (actualizamos nuestra rama personal)
+Ya desde ahí podemos seguir programando, y repetir los pasos
+
+Si alguno se equivoca, para devolverse a un commit en específico
+-git reset --hard id-del-commit

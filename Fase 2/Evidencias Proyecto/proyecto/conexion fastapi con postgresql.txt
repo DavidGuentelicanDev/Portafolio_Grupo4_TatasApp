@@ -1,0 +1,14 @@
+Requisitos previos
+-Tener PostgreSQL instalado y funcionando.
+-Tener pgAdmin configurado.
+-Tener creado un entorno virtual (por ejemplo: env_prueba).
+
+Crear base de datos y usuario en pgAdmin
+-Crear nueva base de datos (ej: tatasapp_db).
+-Crear nuevo usuario (ej: api_user) y asignar contraseña.
+-Ir a tatasapp_db → Schemas → public → Properties → Privileges: Agregar privilegios de ALL al usuario api_user.
+-Abrir una terminal para ingresar estos comandos:
+GRANT CREATE ON SCHEMA public TO api_user;
+GRANT USAGE ON SCHEMA public TO api_user;
+GRANT ALL PRIVILEGES ON DATABASE tatasapp_db TO api_user;
+
