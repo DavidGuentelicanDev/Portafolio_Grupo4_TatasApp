@@ -1,11 +1,10 @@
 # Contiene los modelos ORM que definen las tablas de la base de datos.
 # Creado por david el 15/04
 
-from sqlalchemy import Column, Integer, String, Text, Numeric, BigInteger, Date, SmallInteger, ForeignKey, Enum
+from sqlalchemy import Column, Integer, String, Text, Numeric, BigInteger, Date, SmallInteger, ForeignKey, CheckConstraint
 from sqlalchemy.sql.sqltypes import DECIMAL
 from sqlalchemy.orm import relationship
 from app.database import Base
-import enum
 
 
 #tabla direccion
@@ -29,12 +28,6 @@ class Direccion(Base):
 
 #########################################################################################
 
-#clase para definir los valores permitidos en tipo_usuario
-#creada por davod el 15/04
-class TipoUsuario(enum.IntEnum):
-    ADULTO_MAYOR = 1
-    FAMILIAR = 2
-
 #tabla usuario
 #creada por david el 15/04
 class Usuario(Base):
@@ -47,7 +40,13 @@ class Usuario(Base):
     direccion_id = Column(BigInteger, ForeignKey("DIRECCION.id"), nullable=False, index=True)
     correo = Column(String(100), nullable=False, unique=True, index=True)
     telefono = Column(BigInteger, nullable=False, unique=True, index=True)
-    tipo_usuario = Column(Enum(TipoUsuario), nullable=False, index=True) #se usan las opciones definidas en TipoUsuario
+
+    #definicion especial para tipo_usuario con check
+    tipo_usuario = Column(SmallInteger, nullable=False, index=True)
+    __table_args__ = (
+        CheckConstraint("tipo_usuario BETWEEN 1 AND 2", name="check_tipo_usuario_valido"),
+    )
+
     contrasena = Column(String(255), nullable=False)
     foto_perfil = Column(Text, nullable=True)
 

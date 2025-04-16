@@ -22,7 +22,7 @@ class DireccionOut(BaseModel):
     longitud: float
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UsuarioOut(BaseModel):
     id: int
@@ -38,4 +38,4 @@ class UsuarioOut(BaseModel):
     direccion_rel: DireccionOut
 
     class Config:
-        orm_mode = True
+        from_attributes = True
