@@ -25,25 +25,31 @@ class Direccion(Base):
     longitud = Column(DECIMAL(11,8), nullable=False)
 
     #relacion inversa con usuario
-    #usuarios = relationship("Usuario", back_populates="dir_relacion")
+    usuarios = relationship("Usuario", back_populates="direccion_rel")
 
 #########################################################################################
 
+#clase para definir los valores permitidos en tipo_usuario
+#creada por davod el 15/04
+class TipoUsuario(enum.IntEnum):
+    ADULTO_MAYOR = 1
+    FAMILIAR = 2
+
 #tabla usuario
 #creada por david el 15/04
-# class Usuario(Base):
-#     __tablename__ = "USUARIO"
+class Usuario(Base):
+    __tablename__ = "USUARIO"
 
-#     id = Column(BigInteger, primary_key=True, index=True, autoincrement=True)
-#     nombres = Column(String(50), nullable=False)
-#     apellidos = Column(String(50), nullable=False)
-#     fecha_nacimiento = Column(Date, nullable=False)
-#     direccion_id = Column(BigInteger, ForeignKey("DIRECCION.id"), nullable=False, index=True)
-#     correo = Column(String(100), nullable=False, unique=True)
-#     telefono = Column(BigInteger, nullable=False, unique=True)
-#     tipo_usuario = Column(SmallInteger, nullable=False)
-#     contrasena = Column(String(255), nullable=False)
-#     foto_perfil = Column(Text, nullable=True)
+    id = Column(BigInteger, primary_key=True, index=True, autoincrement=True)
+    nombres = Column(String(50), nullable=False)
+    apellidos = Column(String(50), nullable=False)
+    fecha_nacimiento = Column(Date, nullable=False)
+    direccion_id = Column(BigInteger, ForeignKey("DIRECCION.id"), nullable=False, index=True)
+    correo = Column(String(100), nullable=False, unique=True, index=True)
+    telefono = Column(BigInteger, nullable=False, unique=True, index=True)
+    tipo_usuario = Column(Enum(TipoUsuario), nullable=False, index=True) #se usan las opciones definidas en TipoUsuario
+    contrasena = Column(String(255), nullable=False)
+    foto_perfil = Column(Text, nullable=True)
 
-#     #relacion con tabla direccion
-#     dir_relacion = relationship("Direccion", back_populates="usuarios")
+    #relacion con tabla direccion
+    direccion_rel = relationship("Direccion", back_populates="usuarios")
