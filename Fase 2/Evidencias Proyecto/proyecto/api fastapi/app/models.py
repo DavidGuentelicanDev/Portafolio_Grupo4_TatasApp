@@ -1,8 +1,7 @@
 # Contiene los modelos ORM que definen las tablas de la base de datos.
 # Creado por david el 15/04
 
-from sqlalchemy import Column, Integer, String, Text, Numeric, BigInteger, Date, SmallInteger, ForeignKey, CheckConstraint
-from sqlalchemy.sql.sqltypes import DECIMAL
+from sqlalchemy import Column, Integer, String, Text, BigInteger, Date, SmallInteger, ForeignKey, CheckConstraint, Float
 from sqlalchemy.orm import relationship
 from app.database import Base
 
@@ -20,8 +19,8 @@ class Direccion(Base):
     comuna = Column(String(50), nullable=False)
     region = Column(String(50), nullable=False)
     codigo_postal = Column(String(20), nullable=False)
-    latitud = Column(DECIMAL(10,8), nullable=False)
-    longitud = Column(DECIMAL(11,8), nullable=False)
+    latitud = Column(Float, nullable=False)
+    longitud = Column(Float, nullable=False)
 
     #relacion inversa con usuario
     usuarios = relationship("Usuario", back_populates="direccion_rel")
