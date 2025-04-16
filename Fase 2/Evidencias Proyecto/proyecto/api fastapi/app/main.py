@@ -3,7 +3,7 @@
 
 from fastapi import FastAPI
 from app.database import Base, engine
-from app.routers import router as api_router
+from app.routers import usuarios_router
 import app.models
 
 #inicializar la app
@@ -17,5 +17,5 @@ Base.metadata.create_all(bind=engine)
 def root():
     return {"mensaje": "API TatasApp iniciada correctamente"}
 
-#incluye todas las rutas de routers.py automaticamente
-app.include_router(api_router)
+#incluye todas las rutas de manera modular de routers.py automaticamente
+app.include_router(usuarios_router)

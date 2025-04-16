@@ -4,10 +4,17 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.services.dependencies import get_db
+from app.models import Usuario
+from app.schemas import UsuarioOut
+from typing import List
 
-router = APIRouter() #permite crear rutas en la api
 
-#funcion de prueba
-@router.get("/prueba")
-def prueba(db: Session = Depends(get_db)):
-    return {"mensaje": "Solo para probar si lo programado en dependencies.py funciono"}
+usuarios_router = APIRouter(prefix="/usuarios", tags=["Usuarios"]) #direccion por defecto de todas las rutas de usuarios
+
+
+#ruta de prueba para usuarios
+#creada por david el 16/04
+@usuarios_router.get("/", response_model=List[UsuarioOut])
+def obtener_usuarios(db: Session = Depends(get_db)):
+    usuarios = db.query(Usuario).all()
+    return usuarios
