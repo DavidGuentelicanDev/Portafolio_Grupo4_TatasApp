@@ -4,6 +4,7 @@
 from fastapi import FastAPI
 from app.database import Base, engine
 from app.routers import router as api_router
+import app.models
 
 #inicializar la app
 app = FastAPI()
