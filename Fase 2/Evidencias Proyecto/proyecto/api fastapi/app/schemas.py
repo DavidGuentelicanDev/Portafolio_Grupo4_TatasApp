@@ -40,6 +40,8 @@ class UsuarioOut(BaseModel):
 
 #esquemas para registrar usuario
 #creado por david el 17/04
+min_contrasena = 8
+
 class DireccionCreate(BaseModel):
     direccion_texto: str
     calle: str
@@ -69,8 +71,20 @@ class UsuarioCreate(BaseModel):
     contrasena: str
     direccion: DireccionCreate
 
+    #validador de string vacio
     @field_validator('nombres', 'apellidos', 'correo', 'contrasena')
     def no_string_vacio(cls, v, info):
         if not v or not v.strip():
             raise ValueError(f"El campo '{info.field_name}' no puede estar vacío")
+        return v
+
+    #validador para fortaleza de contraseña
+    @field_validator('contrasena')
+    def fortalecer_contrasena(cls, v):
+        if len(v) < min_contrasena:
+            raise ValueError("La contraseña debe tener al menos 8 caracteres")
+        if not any(c.isupper() for c in v):
+            raise ValueError("La contraseña debe contener al menos una mayúscula")
+        if not any(c.isdigit() for c in v):
+            raise ValueError("La contraseña debe contener al menos un número")
         return v
