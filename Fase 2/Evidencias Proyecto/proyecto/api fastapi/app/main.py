@@ -26,32 +26,35 @@ app.include_router(usuarios_router)
 #handler para manejar errores de validacion (campos requeridos o tipo de dato incorrecto)
 #agregado por david el 17/04
 @app.exception_handler(RequestValidationError)
-async def validacion_excepciones_personalizadas_handler(request: Request, exc: RequestValidationError):
+async def handler_validacion_excepciones_personalizadas(request: Request, exc: RequestValidationError):
     errores = []
+    tipos_null_obligatorio = {"string_type", "int_type", "float_type", "date_type", "bool_type"}
+
     for error in exc.errors():
         loc = error.get("loc", [])
-
-        #inditificar el campo real no enviado
-        field = str(loc[-1]) if loc else "campo_desconocido"
         tipo_error = error.get("type")
-
-        #por defecto se agrega el mensaje original
         mensaje = error.get("msg")
 
-        #si hay un campo no enviado
-        if tipo_error in ("value_error.missing", "missing"):
-            mensaje = f"El campo '{field}' es obligatorio y no fue enviado"
+        if loc and loc[0] == 'body':
+            loc = loc[1:]
 
-        errores.append({
-            "field": field,
-            "message": mensaje
-        })
+        campo = ".".join(str(l) for l in loc) if loc else "campo_desconocido"
+
+        #si el error esta dentro del arreglo
+        if tipo_error in tipos_null_obligatorio:
+            errores.append({
+                "message": f"El campo '{campo}' es obligatorio y no puede ser nulo"
+            })
+        else:
+            errores.append({
+                "message": f"Error en el campo '{campo}': {mensaje}"
+            })
 
     return JSONResponse(
         status_code=422,
         content={
             "status": "error",
-            "message": "Error en la validacion de los campos enviados",
+            "message": "Error en la validación",
             "errors": errores
         }
     )
@@ -60,7 +63,7 @@ async def validacion_excepciones_personalizadas_handler(request: Request, exc: R
 #handler para validacion de errores http (datos unicos)
 #agregado por david el 17/04
 @app.exception_handler(HTTPException)
-async def http_exception_peronalizados_handler(request: Request, exc: HTTPException):
+async def handler_excepciones_http_peronalizadas(request: Request, exc: HTTPException):
     if isinstance(exc.detail, dict):
         return JSONResponse(
             status_code=exc.status_code,

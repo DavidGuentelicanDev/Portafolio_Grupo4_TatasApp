@@ -1,7 +1,7 @@
 # Define los esquemas de entrada y salida utilizando Pydantic para validaciones.
 # Creado por david el 15/04
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator, ValidationError, model_validator
 from typing import Optional
 from datetime import date
 
@@ -21,6 +21,7 @@ class DireccionOut(BaseModel):
 
     class Config:
         from_attributes = True
+
 
 class UsuarioOut(BaseModel):
     nombres: str
@@ -50,6 +51,14 @@ class DireccionCreate(BaseModel):
     latitud: float
     longitud: float
 
+    #validador de string vacio
+    @field_validator('direccion_texto', 'calle', 'comuna', 'region', 'codigo_postal')
+    def no_string_vacio(cls, v, info):
+        if not v or not v.strip():
+            raise ValueError(f"El campo '{info.field_name}' no puede estar vacío")
+        return v
+
+
 class UsuarioCreate(BaseModel):
     nombres: str
     apellidos: str
@@ -59,3 +68,9 @@ class UsuarioCreate(BaseModel):
     tipo_usuario: int
     contrasena: str
     direccion: DireccionCreate
+
+    @field_validator('nombres', 'apellidos', 'correo', 'contrasena')
+    def no_string_vacio(cls, v, info):
+        if not v or not v.strip():
+            raise ValueError(f"El campo '{info.field_name}' no puede estar vacío")
+        return v
