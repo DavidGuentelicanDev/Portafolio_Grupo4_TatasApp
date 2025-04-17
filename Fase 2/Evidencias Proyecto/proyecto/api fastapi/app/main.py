@@ -29,10 +29,18 @@ app.include_router(usuarios_router)
 async def validacion_excepciones_personalizadas_handler(request: Request, exc: RequestValidationError):
     errores = []
     for error in exc.errors():
-        field = ".".join(str(loc) for loc in error["loc"] if isinstance(loc, str))
+        loc = error.get("loc", [])
+        field = ".".join(str(l) for l in loc if isinstance(l, str)) #toma solo los strings del path
+        tipo_error = error.get("type")
+        mensaje = error.get("msg")
+
+        #mensaje personalizado si el campo esta vacio
+        if tipo_error == "value_error.missing":
+            mensaje = f"El campo '{field}' es obligatorio y no fue enviado"
+
         errores.append({
             "field": field,
-            "message": error["msg"]
+            "message": mensaje
         })
 
     return JSONResponse(
@@ -45,7 +53,7 @@ async def validacion_excepciones_personalizadas_handler(request: Request, exc: R
     )
 
 
-#handler para validacion de errores http (correo y telefono ya registrado)
+#handler para validacion de errores http (datos unicos)
 #agregado por david el 17/04
 @app.exception_handler(HTTPException)
 async def http_exception_peronalizados_handler(request: Request, exc: HTTPException):
