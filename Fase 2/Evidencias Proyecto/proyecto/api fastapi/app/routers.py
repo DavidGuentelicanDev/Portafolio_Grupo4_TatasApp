@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.services.dependencies import get_db
 from app.models import Usuario, Direccion
 from app.schemas import UsuarioOut, UsuarioCreate
+from app.auth.hashing import get_hash_contrasena
 from typing import List
 
 
@@ -55,6 +56,9 @@ def registrar_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(nueva_direccion)
 
+        #hashear la contraseña
+        contrasena_hasheada = get_hash_contrasena(usuario.contrasena)
+
         #crear usuario
         nuevo_usuario = Usuario(
             nombres=usuario.nombres,
@@ -64,14 +68,17 @@ def registrar_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
             correo=usuario.correo,
             telefono=usuario.telefono,
             tipo_usuario=usuario.tipo_usuario,
-            contrasena=usuario.contrasena
+            contrasena=contrasena_hasheada #se guarda la contraseña hasheada
         )
         db.add(nuevo_usuario)
         db.commit()
         db.refresh(nuevo_usuario)
-    except:
+    except Exception as e:
         db.rollback()
-        raise
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error al registrar usuario: {str(e)}"
+        )
 
     #construye y retorna la respuesta json
     return JSONResponse(
