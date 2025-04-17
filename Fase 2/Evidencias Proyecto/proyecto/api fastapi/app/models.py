@@ -32,6 +32,12 @@ class Direccion(Base):
 class Usuario(Base):
     __tablename__ = "USUARIO"
 
+    #documentacion tipo_usuarios
+    TIPOS_USUARIO = {
+        1: "Adulto Mayor",
+        2: "Familiar"
+    }
+
     id = Column(BigInteger, primary_key=True, index=True, autoincrement=True)
     nombres = Column(String(50), nullable=False)
     apellidos = Column(String(50), nullable=False)
@@ -51,3 +57,8 @@ class Usuario(Base):
 
     #relacion con tabla direccion
     direccion_rel = relationship("Direccion", back_populates="usuarios")
+
+    #propiedad que permite leer el tipo de usuario segun el valor int guardado
+    @property
+    def tipo_usuario_nombre(self):
+        return self.TIPOS_USUARIO.get(self.tipo_usuario, "Desconocido")

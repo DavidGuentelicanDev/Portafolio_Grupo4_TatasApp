@@ -10,7 +10,6 @@ from datetime import date
 #creada por david el 16/04
 
 class DireccionOut(BaseModel):
-    id: int
     direccion_texto: str
     calle: str
     numero: int
@@ -25,15 +24,12 @@ class DireccionOut(BaseModel):
         from_attributes = True
 
 class UsuarioOut(BaseModel):
-    id: int
     nombres: str
     apellidos: str
     fecha_nacimiento: date
-    direccion_id: int
     correo: str
     telefono: int
-    tipo_usuario: int
-    contrasena: str
+    tipo_usuario_str: str #cambiado para mostrar el nombre del tipo_usuario
     foto_perfil: Optional[str]
     direccion_rel: DireccionOut
 
