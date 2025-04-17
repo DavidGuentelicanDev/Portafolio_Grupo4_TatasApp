@@ -6,7 +6,7 @@ from typing import Optional
 from datetime import date
 
 
-#classes para mostrar el usuario con direccion (prueba)
+#clases para mostrar el usuario con direccion (prueba)
 #creada por david el 16/04
 
 class DireccionOut(BaseModel):
@@ -35,3 +35,28 @@ class UsuarioOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+####################################################################################################
+
+#esquemas para registrar usuario
+#creado por david el 17/04
+class DireccionCreate(BaseModel):
+    direccion_texto: str
+    calle: str
+    numero: int
+    adicional: Optional[str]
+    comuna: str
+    region: str
+    codigo_postal: str
+    latitud: float
+    longitud: float
+
+class UsuarioCreate(BaseModel):
+    nombres: str
+    apellidos: str
+    fecha_nacimiento: date
+    correo: str
+    telefono: int
+    tipo_usuario: int
+    contrasena: str
+    direccion: DireccionCreate
