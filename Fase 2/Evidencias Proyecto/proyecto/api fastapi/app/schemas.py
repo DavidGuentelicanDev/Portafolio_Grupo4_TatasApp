@@ -8,7 +8,6 @@ from datetime import date
 
 #clases para mostrar el usuario con direccion (prueba)
 #creada por david el 16/04
-
 class DireccionOut(BaseModel):
     direccion_texto: str
     calle: str

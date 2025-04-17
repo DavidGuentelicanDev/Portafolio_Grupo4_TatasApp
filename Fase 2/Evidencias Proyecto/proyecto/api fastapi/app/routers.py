@@ -36,6 +36,8 @@ def obtener_usuarios(db: Session = Depends(get_db)):
 
     return usuarios_out
 
+#########################################################################################################
+
 #ruta para registrar usuario
 #creada por david el 17/04
 @usuarios_router.post("/registro_usuario", response_model=UsuarioOut, status_code=status.HTTP_201_CREATED)
