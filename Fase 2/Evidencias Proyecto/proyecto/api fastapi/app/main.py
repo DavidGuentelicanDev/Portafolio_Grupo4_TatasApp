@@ -30,12 +30,16 @@ async def validacion_excepciones_personalizadas_handler(request: Request, exc: R
     errores = []
     for error in exc.errors():
         loc = error.get("loc", [])
-        field = ".".join(str(l) for l in loc if isinstance(l, str)) #toma solo los strings del path
+
+        #inditificar el campo real no enviado
+        field = str(loc[-1]) if loc else "campo_desconocido"
         tipo_error = error.get("type")
+
+        #por defecto se agrega el mensaje original
         mensaje = error.get("msg")
 
-        #mensaje personalizado si el campo esta vacio
-        if tipo_error == "value_error.missing":
+        #si hay un campo no enviado
+        if tipo_error in ("value_error.missing", "missing"):
             mensaje = f"El campo '{field}' es obligatorio y no fue enviado"
 
         errores.append({
