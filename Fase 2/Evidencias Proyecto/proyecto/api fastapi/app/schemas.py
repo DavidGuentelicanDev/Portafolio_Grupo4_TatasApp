@@ -1,7 +1,7 @@
 # Define los esquemas de entrada y salida utilizando Pydantic para validaciones.
 # Creado por david el 15/04
 
-from pydantic import BaseModel, field_validator, ValidationError, model_validator
+from pydantic import BaseModel, field_validator
 from typing import Optional
 from datetime import date
 
