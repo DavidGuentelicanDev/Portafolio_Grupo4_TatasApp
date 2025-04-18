@@ -1,9 +1,13 @@
 # Define los esquemas de entrada y salida utilizando Pydantic para validaciones.
 # Creado por david el 15/04
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel
 from typing import Optional
 from datetime import date
+from app.utils.helpers import (
+    validador_no_string_vacio,
+    validador_contrasena
+)
 
 
 #clases para mostrar el usuario con direccion (prueba)
@@ -53,12 +57,14 @@ class DireccionCreate(BaseModel):
     latitud: float
     longitud: float
 
-    #validador de string vacio
-    @field_validator('direccion_texto', 'calle', 'comuna', 'region', 'codigo_postal')
-    def no_string_vacio(cls, v, info):
-        if not v or not v.strip():
-            raise ValueError(f"El campo '{info.field_name}' no puede estar vacío")
-        return v
+    #validador string vacio
+    _validar_campos_str = validador_no_string_vacio(
+        'direccion_texto',
+        'calle',
+        'comuna',
+        'region',
+        'codigo_postal'
+    )
 
 
 class UsuarioCreate(BaseModel):
@@ -71,20 +77,13 @@ class UsuarioCreate(BaseModel):
     contrasena: str
     direccion: DireccionCreate
 
-    #validador de string vacio
-    @field_validator('nombres', 'apellidos', 'correo', 'contrasena')
-    def no_string_vacio(cls, v, info):
-        if not v or not v.strip():
-            raise ValueError(f"El campo '{info.field_name}' no puede estar vacío")
-        return v
+    #validador string no vacio
+    _validar_campos_str = validador_no_string_vacio('nombres', 'apellidos', 'correo', 'contrasena')
 
-    #validador para fortaleza de contraseña
-    @field_validator('contrasena')
-    def fortalecer_contrasena(cls, v):
-        if len(v) < min_contrasena:
-            raise ValueError("La contraseña debe tener al menos 8 caracteres")
-        if not any(c.isupper() for c in v):
-            raise ValueError("La contraseña debe contener al menos una mayúscula")
-        if not any(c.isdigit() for c in v):
-            raise ValueError("La contraseña debe contener al menos un número")
-        return v
+    #validador de formato contraseña
+    _validar_contrasena = validador_contrasena(
+        campo='contrasena',
+        min_longitud=8,
+        requerir_mayuscula=True,
+        requerir_numero=True
+    )
