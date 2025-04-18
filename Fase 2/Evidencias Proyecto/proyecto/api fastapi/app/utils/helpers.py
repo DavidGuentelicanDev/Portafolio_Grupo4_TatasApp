@@ -26,7 +26,6 @@ def no_string_vacio(v: str, field_name: str = 'campo') -> str:
     return v.strip()
 
 #decorador no_string_vacio
-#creado por david el 17/04
 def validador_no_string_vacio(*campos: str):
     return field_validator(*campos)(lambda cls, v, info: no_string_vacio(v, info.field_name))
 
@@ -47,7 +46,6 @@ def fortalecer_contrasena(
     return contrasena
 
 #decorador fortalecer_contrasena
-#creado por david el 17/04
 def validador_contrasena(
     campo: str = 'contrasena',
     min_longitud: int = MIN_CONTRASENA,
@@ -72,9 +70,20 @@ def formato_correo_valido(correo: str) -> str:
     return correo
 
 #decorador para validar el formato de correo
-#creado por david el 18/04
 def validador_formato_correo(campo: str = 'correo'):
     return field_validator(campo)(lambda cls, v, info: formato_correo_valido(v))
+
+#valida el formato de telefono
+#creado por david el 18/04
+def formato_telefono_valido(telefono: int) -> int:
+    telefono_str = str(telefono) #convierte el telefono a string
+    if not telefono_str.startswith('569') or len(telefono_str) != 11:
+        raise ValueError("El teléfono debe tener formato 569XXXXXXXX (11 dígitos)")
+    return telefono
+
+#decorador para validar formato telefono
+def validador_formato_telefono(campo: str = 'telefono'):
+    return field_validator(campo)(lambda cls, v, info: formato_telefono_valido(v))
 
 ###################################################################################################
 

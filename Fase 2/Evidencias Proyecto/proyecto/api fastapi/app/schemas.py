@@ -7,12 +7,14 @@ from datetime import date
 from app.utils.helpers import (
     validador_no_string_vacio,
     validador_contrasena,
-    validador_formato_correo
+    validador_formato_correo,
+    validador_formato_telefono
 )
 
 
 #clases para mostrar el usuario con direccion (prueba)
 #creada por david el 16/04
+
 class DireccionOut(BaseModel):
     direccion_texto: str
     calle: str
@@ -26,7 +28,6 @@ class DireccionOut(BaseModel):
 
     class Config:
         from_attributes = True
-
 
 class UsuarioOut(BaseModel):
     nombres: str
@@ -45,6 +46,7 @@ class UsuarioOut(BaseModel):
 
 #esquemas para registrar usuario
 #creado por david el 17/04
+
 min_contrasena = 8
 
 class DireccionCreate(BaseModel):
@@ -66,7 +68,6 @@ class DireccionCreate(BaseModel):
         'region',
         'codigo_postal'
     )
-
 
 class UsuarioCreate(BaseModel):
     nombres: str
@@ -91,3 +92,6 @@ class UsuarioCreate(BaseModel):
 
     #validador de formato correo
     _validar_formato_correo = validador_formato_correo('correo')
+
+    #validador de formato telefono
+    _validar_formato_telefono = validador_formato_telefono('telefono')
