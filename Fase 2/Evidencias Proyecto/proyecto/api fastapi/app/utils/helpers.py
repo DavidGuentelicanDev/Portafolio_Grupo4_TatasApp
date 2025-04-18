@@ -8,12 +8,14 @@
 from pydantic import field_validator
 from typing import Any
 from typing_extensions import Literal
+from sqlalchemy.orm import Session
+from fastapi import HTTPException
+from fastapi.responses import JSONResponse
 
 
-#CONSTANTES
-MIN_CONTRASENA = 8 #agregado por david el 17/04
+#SCHEMAS DE REGISTRO DE USUARIO
 
-#VALIDADORES GENERICOS
+MIN_CONTRASENA = 8
 
 #valida que un string no este vacio o solo con espacios
 #creado por david el 17/04
@@ -38,8 +40,6 @@ def fortalecer_contrasena(
         raise ValueError("La contraseña debe contener al menos un número")
     return contrasena
 
-#VERSION DECORADORES
-
 #decorador no_string_vacio
 #creado por david el 17/04
 def validador_no_string_vacio(*campos: str):
@@ -60,3 +60,36 @@ def validador_contrasena(
             requerir_numero=requerir_numero
         )
     )
+
+###################################################################################################
+
+#RUTAS DE REGISTRO DE USUARIOS
+
+#verifica campos unique
+def verificar_campos_unicos(
+    db: Session,
+    modelo: type,
+    campos: dict,
+    exclusion_id: int = None
+) -> None:
+    for campo, valor in campos.items():
+        query = db.query(modelo).filter(getattr(modelo, campo) == valor)
+        if exclusion_id:
+            query = query.filter(modelo.id != exclusion_id)
+        if query.first():
+            raise HTTPException(
+                status_code=400,
+                detail=f"{campo.capitalize()} ya registrado"
+            )
+
+#estandariza las respuestas json
+def crear_respuesta_json(
+    status_code: int = 200,
+    status: str = "success",
+    message: str = "",
+    data: dict = None
+) -> JSONResponse :
+    content = {"status": status, "message": message}
+    if data:
+        content.update({"data": data})
+    return JSONResponse(status_code=status_code, content=content)
