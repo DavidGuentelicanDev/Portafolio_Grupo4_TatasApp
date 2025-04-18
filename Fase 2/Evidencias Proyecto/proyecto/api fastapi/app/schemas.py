@@ -6,7 +6,8 @@ from typing import Optional
 from datetime import date
 from app.utils.helpers import (
     validador_no_string_vacio,
-    validador_contrasena
+    validador_contrasena,
+    validador_formato_correo
 )
 
 
@@ -87,3 +88,6 @@ class UsuarioCreate(BaseModel):
         requerir_mayuscula=True,
         requerir_numero=True
     )
+
+    #validador de formato correo
+    _validar_formato_correo = validador_formato_correo('correo')
