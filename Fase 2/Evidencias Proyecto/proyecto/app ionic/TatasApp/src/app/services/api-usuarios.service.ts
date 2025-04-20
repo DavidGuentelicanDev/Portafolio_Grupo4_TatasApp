@@ -6,18 +6,10 @@ import { environment } from 'src/environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class ApiPruebaService {
+export class ApiUsuariosService {
 
   private baseUrl = "http://localhost:8000"; //url del servidor local de la api
   //private baseUrl = environment.apiUrl; //url del servidor externo de la api
 
-  constructor(
-    private http: HttpClient, //dependencia para conectar la api
-  ) { }
-
-  //ruta raiz de la api (solo para probar conexion)
-  obtenerRutaRaiz() {
-    return this.http.get(this.baseUrl + "/").pipe();
-  }
-
+  constructor() { }
 }

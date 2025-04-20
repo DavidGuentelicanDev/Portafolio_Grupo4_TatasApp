@@ -26,17 +26,6 @@ export class PruebaApiPage implements OnInit {
       error: (err) => console.log('tatas: Error detallado:', JSON.stringify(err, null, 2))
     });
 
-    //llamar la ruta usuarios con todos los usuarios (para probar)
-    this.obtenerUsuarios();
-  }
-
-  //para traer los usuarios de la ruta get
-  async obtenerUsuarios() {
-    let datos = this.apiPrueba.obtenerTodosLosUsuarios();
-    let respuesta = await lastValueFrom(datos);
-    let json_texto = JSON.stringify(respuesta);
-    console.log("tatas: " + json_texto);
-    let json = JSON.parse(json_texto);
   }
 
 }
