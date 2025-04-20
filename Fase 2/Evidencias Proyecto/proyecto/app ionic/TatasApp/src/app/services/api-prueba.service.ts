@@ -8,8 +8,8 @@ import { environment } from 'src/environments/environment';
 })
 export class ApiPruebaService {
 
-  private baseUrl = "http://localhost:8000"; //url del servidor local de la api
-  //private baseUrl = environment.apiUrl; //url del servidor externo de la api
+  //private baseUrl = "http://localhost:8000"; //url del servidor local de la api
+  private baseUrl = environment.apiUrl; //url del servidor externo de la api
 
   constructor(
     private http: HttpClient, //dependencia para conectar la api
