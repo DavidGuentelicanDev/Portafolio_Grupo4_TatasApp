@@ -10,21 +10,30 @@ from app.validations import (
     handler_excepciones_http_peronalizadas
 )
 import app.models
+from fastapi.middleware.cors import CORSMiddleware
+from app.config import settings
 
 
-app = FastAPI() #inicializar la app
+app = FastAPI(title=settings.PROJECT_NAME) #inicializar la app
 
 Base.metadata.create_all(bind=engine) #crea las tablas automaticamente al iniciar
+
+#cors middleware para la ruta local/externa de la api
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.ALLOWED_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 #ruta raiz para verificar que la api funciona
 @app.get("/")
 def root():
     return {"mensaje": "API TatasApp iniciada correctamente"}
 
-
 #incluye todas las rutas de manera modular de routers.py automaticamente
 app.include_router(usuarios_router)
-
 
 #agregados los handlers
 app.add_exception_handler(RequestValidationError, handler_validacion_excepciones_personalizadas)
