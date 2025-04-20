@@ -1,8 +1,11 @@
 Luego de hacer el git pull o git clone, deben correr este comando en la carpeta principal de ionic (TatasApp):
 
-npm install (para instalar node_modules)
+- npm install (para instalar node_modules)
+- Para instalar SQLite: a) npm install cordova-sqlite-storage // b) npm install @awesome-cordova-plugins/sqlite
+- Para nativizar la app en Android: a) ionic cap sync // b) npm install @capacitor/core @capacitor/cli @capacitor/android // c) npx cap add Android
+
+Para correr el servidor y probar la app: ionic cap run android --livereload --external
+
 
 COMANDOS ORIGINALES:
 ionic start TatasApp blank --type=angular
-Para instalar SQLite: a) npm install cordova-sqlite-storage // b) npm install @awesome-cordova-plugins/sqlite
-Para nativizar la app en Android: a) ionic cap sync // b) npm install @capacitor/android // c) npx cap add android
