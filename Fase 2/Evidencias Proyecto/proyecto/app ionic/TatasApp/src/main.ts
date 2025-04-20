@@ -5,8 +5,12 @@ import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalo
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 
+//importacion para apis
+import { provideHttpClient } from '@angular/common/http';
+
 bootstrapApplication(AppComponent, {
   providers: [
+    provideHttpClient(), //inyectar para poder usar la api
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
     provideRouter(routes, withPreloading(PreloadAllModules)),

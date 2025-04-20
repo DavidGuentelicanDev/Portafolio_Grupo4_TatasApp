@@ -2,8 +2,12 @@
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+//importar el config local
+import { localConfig } from "src/config.local";
+
 export const environment = {
-  production: false
+  production: false,
+  apiUrl: localConfig.apiUrl //aqui va la ip de internet que esta en el archivo externo
 };
 
 /*

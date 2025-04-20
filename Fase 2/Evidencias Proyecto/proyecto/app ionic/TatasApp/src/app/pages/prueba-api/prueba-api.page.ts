@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+//importaciones para la api
+import { ApiPruebaService } from 'src/app/services/api-prueba.service'; //(importacion para pruebas de la api)
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-prueba-api',
@@ -12,9 +15,28 @@ import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/stan
 })
 export class PruebaApiPage implements OnInit {
 
-  constructor() { }
+  constructor(
+    private apiPrueba: ApiPruebaService, //dependencia para el servicio de prueba de la api (solo para pruebas de conexion)
+  ) { }
 
   ngOnInit() {
+    //ruta raiz de la api
+    this.apiPrueba.obtenerRutaRaiz().subscribe({
+      next: (res) => console.log('tatas: Respuesta de API:', JSON.stringify(res, null, 2)),
+      error: (err) => console.log('tatas: Error detallado:', JSON.stringify(err, null, 2))
+    });
+
+    //llamar la ruta usuarios con todos los usuarios (para probar)
+    this.obtenerUsuarios();
+  }
+
+  //para traer los usuarios de la ruta get
+  async obtenerUsuarios() {
+    let datos = this.apiPrueba.obtenerTodosLosUsuarios();
+    let respuesta = await lastValueFrom(datos);
+    let json_texto = JSON.stringify(respuesta);
+    console.log("tatas: " + json_texto);
+    let json = JSON.parse(json_texto);
   }
 
 }
