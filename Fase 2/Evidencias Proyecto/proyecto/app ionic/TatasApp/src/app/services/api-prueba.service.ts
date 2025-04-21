@@ -19,10 +19,12 @@ export class ApiPruebaService {
   obtenerRutaRaiz() {
     return this.http.get(this.baseUrl + "/").pipe();
   }
-
+  
   //todos los usuarios (solo para probar conexion)
   obtenerTodosLosUsuarios() {
+    console.log('tatasi '+ this.baseUrl + '/usuarios')
     return this.http.get(this.baseUrl + "/usuarios").pipe();
+    
   }
 
 }
