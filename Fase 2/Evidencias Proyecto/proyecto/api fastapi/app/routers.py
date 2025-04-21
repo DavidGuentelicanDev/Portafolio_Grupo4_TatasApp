@@ -2,10 +2,18 @@
 # Creado por david el 15/04
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from app.services.dependencies import get_db
 from app.models import Usuario, Direccion
-from app.schemas import UsuarioOut, UsuarioCreate, UsuarioLogin, RespuestaLoginExitoso
+from app.schemas import (
+    UsuarioOut,
+    UsuarioCreate,
+    UsuarioLogin,
+    RespuestaLoginExitoso,
+    ContenidoLogin,
+    RespuestaLoginErronea
+)
 from app.auth.hashing import get_hash_contrasena
 from app.auth.auth import autentificar_usuario
 from app.auth.jwt import crear_token_acceso
@@ -94,10 +102,15 @@ def registrar_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
 #ruta para login
 #creado por david el 20/04
 
-@usuarios_router.post("/login", response_model=RespuestaLoginExitoso)
+@usuarios_router.post("/login")
 async def login(datos_login: UsuarioLogin, db: Session = Depends(get_db)):
     #autenticar usuario
     usuario = autentificar_usuario(db, datos_login.correo, datos_login.contrasena)
+
+    #login erroneo
+    if not usuario:
+        respuesta = RespuestaLoginErronea()
+        return JSONResponse(status_code=200, content=respuesta.model_dump())
 
     #datos adicionales del token
     token_data = {
@@ -117,5 +130,7 @@ async def login(datos_login: UsuarioLogin, db: Session = Depends(get_db)):
         "token": token
     }
 
-    #devuelve respuesta exitosa
-    return RespuestaLoginExitoso(contenido=contenido)
+    #respuesta login exitoso
+    respuesta = RespuestaLoginExitoso(contenido=contenido)
+
+    return JSONResponse(status_code=200, content=respuesta.model_dump())

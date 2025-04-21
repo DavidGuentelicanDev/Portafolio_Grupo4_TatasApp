@@ -5,21 +5,18 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from app.models import Usuario
 from app.auth.hashing import verificar_contrasena
-from app.schemas import RespuestaLoginErronea
+from app.schemas import RespuestaLoginErronea, UsuarioLogin, ContenidoLogin, RespuestaLoginExitoso
 
 
 #autentificacion de usuario
 #creada por david el 20/04
-def autentificar_usuario(db: Session, correo: str, contrasena: str) -> Usuario:
+def autentificar_usuario(db: Session, correo: str, contrasena: str) -> Usuario | None:
     #buscar usuario por correo
     usuario = db.query(Usuario).filter(Usuario.correo == correo).first()
 
     #si usuario no existe o no coincide con la contraseña: error
     if not usuario or not verificar_contrasena(contrasena, usuario.contrasena):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=RespuestaLoginErronea().model_dump()
-        )
+        return None
 
     #si todo esta bien, devuelve el usuario
     return usuario
