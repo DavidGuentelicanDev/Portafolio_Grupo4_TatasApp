@@ -10,7 +10,6 @@ from app.utils.helpers import (
     validador_formato_correo,
     validador_formato_telefono
 )
-from datetime import datetime
 
 
 #clases para mostrar el usuario con direccion (prueba)

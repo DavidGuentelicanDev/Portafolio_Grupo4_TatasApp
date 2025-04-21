@@ -2,7 +2,7 @@
 # Creado por david el 15/04
 
 from jose import jwt, JWTError
-from datetime import datetime
+from datetime import datetime, timezone
 from app.config import settings
 from fastapi import HTTPException, status
 
@@ -18,7 +18,7 @@ def crear_token_acceso(subject: str, additional_data: dict = None) -> str:
     try:
         payload = {
         "sub": subject,
-        "iat": datetime.utcnow(), #fecha de creacion
+        "iat": datetime.now(timezone.utc), #fecha de creacion
         "app": "TatasApp" #id de la app
         }
 

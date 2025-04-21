@@ -6,8 +6,6 @@
 # Creado por david el 15/04
 
 from pydantic import field_validator
-from typing import Any
-from typing_extensions import Literal
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from fastapi.responses import JSONResponse
