@@ -111,12 +111,20 @@ class Token(BaseModel):
     access_token: str
     token_type: str = "bearer" #valor por defecto
 
+#esquema para llenar el contenido de la respuesta de login exitoso
+#creado por david el 20/04
+class ContenidoLogin(BaseModel):
+    id_usuario: int
+    nombres: str
+    tipo_usuario: int
+    token: str
+
 #esquema para la respuesta exitosa
 #creado por david el 20/04
 class RespuestaLoginExitoso(BaseModel):
     status: str = "success"
     message: str = "Credenciales válidas"
-    token: str
+    contenido: ContenidoLogin
 
 #esquema para la respuesta erronea
 #creado por david el 20/04

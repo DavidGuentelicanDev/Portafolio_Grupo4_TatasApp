@@ -101,7 +101,7 @@ async def login(datos_login: UsuarioLogin, db: Session = Depends(get_db)):
 
     #datos adicionales del token
     token_data = {
-        "user_id": str(usuario.id),
+        "id_usuario": usuario.id,
         "nombres": usuario.nombres,
         "tipo_usuario": usuario.tipo_usuario
     }
@@ -109,5 +109,13 @@ async def login(datos_login: UsuarioLogin, db: Session = Depends(get_db)):
     #generar token
     token = crear_token_acceso(subject=usuario.correo, additional_data=token_data)
 
+    #preparar el contenido
+    contenido = {
+        "id_usuario": usuario.id,
+        "nombres": usuario.nombres,
+        "tipo_usuario": usuario.tipo_usuario,
+        "token": token
+    }
+
     #devuelve respuesta exitosa
-    return RespuestaLoginExitoso(token=token)
+    return RespuestaLoginExitoso(contenido=contenido)
