@@ -1,7 +1,7 @@
 # Define los esquemas de entrada y salida utilizando Pydantic para validaciones.
 # Creado por david el 15/04
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import Optional
 from datetime import date
 from app.utils.helpers import (
@@ -10,6 +10,7 @@ from app.utils.helpers import (
     validador_formato_correo,
     validador_formato_telefono
 )
+from datetime import datetime
 
 
 #clases para mostrar el usuario con direccion (prueba)
@@ -46,8 +47,6 @@ class UsuarioOut(BaseModel):
 
 #esquemas para registrar usuario
 #creado por david el 17/04
-
-min_contrasena = 8
 
 class DireccionCreate(BaseModel):
     direccion_texto: str
@@ -95,3 +94,32 @@ class UsuarioCreate(BaseModel):
 
     #validador de formato telefono
     _validar_formato_telefono = validador_formato_telefono('telefono')
+
+###########################################################################################################
+
+#esquemas para login
+
+#esquema de datos para el login
+#creado por david el 20/04
+class UsuarioLogin(BaseModel):
+    correo: str
+    contrasena: str
+
+#esquema para la respuesta del token
+#creado por david el 20/04
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer" #valor por defecto
+
+#esquema para la respuesta exitosa
+#creado por david el 20/04
+class RespuestaLoginExitoso(BaseModel):
+    status: str = "success"
+    message: str = "Credenciales válidas"
+    token: str
+
+#esquema para la respuesta erronea
+#creado por david el 20/04
+class RespuestaLoginErronea(BaseModel):
+    status: str = "error"
+    message: str = "Credenciales inválidas"

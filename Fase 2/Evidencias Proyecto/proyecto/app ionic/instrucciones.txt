@@ -2,7 +2,8 @@ Luego de hacer el git pull o git clone, deben correr este comando en la carpeta 
 
 - npm install (para instalar node_modules)
 - Para instalar SQLite: a) npm install cordova-sqlite-storage // b) npm install @awesome-cordova-plugins/sqlite
-- Para nativizar la app en Android: a) ionic cap sync // b) npm install @capacitor/core @capacitor/cli @capacitor/android // c) npx cap add android
+- Para nativizar la app en Android: a) ionic cap sync // b) npm install @capacitor/core @capacitor/cli @capacitor/android // c) npx cap add Android
+- Para abrir la app en Android: npx cap open android
 
 Para correr el servidor y probar la app: ionic cap run android --livereload --external
 
