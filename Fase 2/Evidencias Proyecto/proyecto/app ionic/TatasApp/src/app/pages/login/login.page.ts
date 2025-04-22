@@ -52,9 +52,25 @@ export class LoginPage implements OnInit {
     let datos = this.apiUsuario.login(this.mdl_usuario.correo, this.mdl_usuario.contrasena);
     let respuesta = await lastValueFrom(datos);
     let json_texto = JSON.stringify(respuesta);
-    console.log("tatas: " + json_texto);
     let json = JSON.parse(json_texto);
-    console.log("tatas: " + json.status);
+
+    //guardar datos en la lista
+    this.db_loginExitoso.id_usuario = json.contenido.id_usuario;
+    this.db_loginExitoso.nombres = json.contenido.nombres;
+    this.db_loginExitoso.tipo_usuario = json.contenido.tipo_usuario;
+    this.db_loginExitoso.token = json.contenido.token;
+
+    this.guardarDatosUsuario(); //guardando los datos de usuario
+  }
+
+  //funcion para guardar los datos de usuario
+  async guardarDatosUsuario() {
+    await this.dbOff.guardarDatosLogueoExitoso(
+      this.db_loginExitoso.id_usuario,
+      this.db_loginExitoso.nombres,
+      this.db_loginExitoso.tipo_usuario,
+      this.db_loginExitoso.token
+    );
   }
 
 }

@@ -32,10 +32,22 @@ export class DbOffService {
     await this.abrirDB();
 
     try {
-      await this.dbInstancia?.executeSql("CREATE TABLE IF NOT EXISTS USUARIO (ID_USUARIO INTEGER, NOMBRES VARCHAR(50), TIPO_USUARIO INTEGER, TOKEN VARCHAR(100))", []);
+      await this.dbInstancia?.executeSql("CREATE TABLE IF NOT EXISTS USUARIO (ID_USUARIO INTEGER, NOMBRES VARCHAR(50), TIPO_USUARIO INTEGER, TOKEN VARCHAR(300))", []);
       console.log("tatas: TABLA USUARIO CREADA/INICIADA OK");
     } catch (e) {
       console.log("tatas: PROBLEMA AL CREAR/INICIAR TABLA USUARIO: ", JSON.stringify(e));
+    }
+  }
+
+  //guardar datos de usuario logueado
+  async guardarDatosLogueoExitoso(id: number, nombres: string, tipo_usuario: number, token: string) {
+    await this.abrirDB();
+
+    try {
+      await this.dbInstancia?.executeSql("INSERT INTO USUARIO VALUES(?, ?, ?, ?)", [id, nombres, tipo_usuario, token]);
+      console.log("tatas USUARIO LOGUEADO: ", id, nombres, tipo_usuario, token);
+    } catch (e) {
+      console.log("tatas: PROBLEMA AL REGISTRAR DATOS DE USUARIO", JSON.stringify(e));
     }
   }
 
