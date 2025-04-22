@@ -8,8 +8,8 @@ import { UsuarioLogin } from '../interfaces/usuario';
 })
 export class ApiUsuariosService {
 
-  private baseUrl = "http://localhost:8000"; //url del servidor local de la api
-  //private baseUrl = environment.apiUrl; //url del servidor externo de la api
+  //private baseUrl = "http://localhost:8000"; //url del servidor local de la api
+  private baseUrl = environment.apiUrl; //url del servidor externo de la api
 
   constructor(
     private http: HttpClient,

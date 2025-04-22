@@ -4,7 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton } from '@ionic/angular/standalone';
 import { ApiUsuariosService } from 'src/app/services/api-usuarios.service';
 import { lastValueFrom } from 'rxjs';
-import { UsuarioLogin } from 'src/app/interfaces/usuario';
+import { UsuarioLogin, UsuarioLoginExitoso } from 'src/app/interfaces/usuario';
+import { DbOffService } from 'src/app/services/db-off.service';
 
 @Component({
   selector: 'app-login',
@@ -15,14 +16,23 @@ import { UsuarioLogin } from 'src/app/interfaces/usuario';
 })
 export class LoginPage implements OnInit {
 
-  //variable para usar la interfaz
+  //lista para usar la interfaz
   mdl_usuario: UsuarioLogin = {
     correo: "",
     contrasena: ""
   };
 
+  //lista para agregar datos de usuario logueado
+  db_loginExitoso: UsuarioLoginExitoso = {
+    id_usuario: 0,
+    nombres: "",
+    tipo_usuario: 0,
+    token: ""
+  };
+
   constructor(
     private apiUsuario: ApiUsuariosService,
+    private dbOff: DbOffService
   ) { }
 
   ngOnInit() {
@@ -32,6 +42,9 @@ export class LoginPage implements OnInit {
       error: (err) => console.log('tatas: Error detallado:', JSON.stringify(err, null, 2))
     });
 
+    //iniciar tablas
+    this.dbOff.abrirDB();
+    this.dbOff.crearTablaUsuario();
   }
 
   async login() {
