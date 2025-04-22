@@ -6,7 +6,7 @@ export interface UsuarioLogin {
 }
 
 //interfaz para la respuesta de login exitoso
-//creado por david el 20/04
+//creado por david el 21/04
 export interface UsuarioLoginExitoso {
     id_usuario: number
     nombres: string

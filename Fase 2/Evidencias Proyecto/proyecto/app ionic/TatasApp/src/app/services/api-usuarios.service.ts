@@ -9,7 +9,7 @@ import { UsuarioLogin } from '../interfaces/usuario';
 export class ApiUsuariosService {
 
   //private baseUrl = "http://localhost:8000"; //url del servidor local de la api
-  private baseUrl = environment.apiUrl; //url del servidor externo de la api
+  private baseUrl = "https://7a33a53e-f653-4918-b3d4-e7acfcefc43c-00-wq0t0p4r0orv.riker.replit.dev"; //url del servidor externo de la api
 
   constructor(
     private http: HttpClient,
@@ -21,6 +21,7 @@ export class ApiUsuariosService {
   }
 
   //ruta para el login
+  //creado por david el 20/04
   login(correo: string, contrasena: string) {
     let usuario: UsuarioLogin = {
       correo,

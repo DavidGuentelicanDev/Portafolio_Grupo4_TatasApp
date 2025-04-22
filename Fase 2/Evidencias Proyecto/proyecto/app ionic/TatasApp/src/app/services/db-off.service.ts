@@ -15,6 +15,7 @@ export class DbOffService {
   ) { }
 
   //abrir la instancia de db local
+  //creado por david el 21/04
   async abrirDB() {
     try {
       this.dbInstancia = await this.sqlite.create({
@@ -28,6 +29,7 @@ export class DbOffService {
   }
 
   //crear tabla usuario
+  //creado por david el 21/04
   async crearTablaUsuario() {
     await this.abrirDB();
 
@@ -40,6 +42,7 @@ export class DbOffService {
   }
 
   //guardar datos de usuario logueado
+  //creado por david el 22/04
   async guardarDatosLogueoExitoso(id: number, nombres: string, tipo_usuario: number, token: string) {
     await this.abrirDB();
 

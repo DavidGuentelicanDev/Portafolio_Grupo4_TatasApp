@@ -17,12 +17,14 @@ import { DbOffService } from 'src/app/services/db-off.service';
 export class LoginPage implements OnInit {
 
   //lista para usar la interfaz
+  //creado por david el 20/04
   mdl_usuario: UsuarioLogin = {
     correo: "",
     contrasena: ""
   };
 
   //lista para agregar datos de usuario logueado
+  //creado por david el 21/04
   db_loginExitoso: UsuarioLoginExitoso = {
     id_usuario: 0,
     nombres: "",
@@ -47,6 +49,8 @@ export class LoginPage implements OnInit {
     this.dbOff.crearTablaUsuario();
   }
 
+  //funcion de login
+  //creado por david el 20/04
   async login() {
     //enviando los datos
     let datos = this.apiUsuario.login(this.mdl_usuario.correo, this.mdl_usuario.contrasena);
@@ -64,6 +68,7 @@ export class LoginPage implements OnInit {
   }
 
   //funcion para guardar los datos de usuario
+  //creado por david el 22/04
   async guardarDatosUsuario() {
     await this.dbOff.guardarDatosLogueoExitoso(
       this.db_loginExitoso.id_usuario,
