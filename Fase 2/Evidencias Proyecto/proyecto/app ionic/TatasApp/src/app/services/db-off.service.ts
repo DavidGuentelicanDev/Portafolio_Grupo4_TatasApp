@@ -56,20 +56,15 @@ export class DbOffService {
 
   //obtener el token del usuario logueado
   //creado por david el 22/04
-  async obtenerDatosUsuarioLogueado() {
+  async obtenerTokenUsuarioLogueado() {
     await this.abrirDB();
 
     try {
-      let data = await this.dbInstancia?.executeSql("SELECT ID_USUARIO, NOMBRES, TIPO_USUARIO, TOKEN FROM USUARIO", []);
+      let data = await this.dbInstancia?.executeSql("SELECT TOKEN FROM USUARIO", []);
 
       //si hay mas de una fila con resultados devuelve los datos
       if (data?.rows.length > 0) {
-        return {
-          id_usuario: data.rows.item(0).ID_USUARIO,
-          nombres: data.rows.item(0).NOMBRES,
-          tipo_usuario: data.rows.item(0).TIPO_USUARIO,
-          token: data.rows.item(0).TOKEN
-        };
+        return {token: data.rows.item(0).TOKEN};
       }
       return null;
     } catch (e) {

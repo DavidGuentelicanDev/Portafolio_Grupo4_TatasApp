@@ -29,7 +29,7 @@ export class SplashPage implements OnInit {
 
     //validar que haya token de usuario registrado
     //creado por david el 23/04
-    let usuario = await this.dbOff.obtenerDatosUsuarioLogueado();
+    let usuario = await this.dbOff.obtenerTokenUsuarioLogueado();
 
     if (usuario) {
       //si hay token navega al principal
