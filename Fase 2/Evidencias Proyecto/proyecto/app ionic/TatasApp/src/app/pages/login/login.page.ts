@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton } from '@ionic/angular/standalone';
+import { ApiPruebaService } from 'src/app/services/api-prueba.service';
 import { ApiUsuariosService } from 'src/app/services/api-usuarios.service';
 import { lastValueFrom } from 'rxjs';
 import { UsuarioLogin, UsuarioLoginExitoso } from 'src/app/interfaces/usuario';
@@ -33,13 +34,14 @@ export class LoginPage implements OnInit {
   };
 
   constructor(
+    private apiPrueba: ApiPruebaService,
     private apiUsuario: ApiUsuariosService,
     private dbOff: DbOffService
   ) { }
 
   ngOnInit() {
     //ruta raiz de la api
-    this.apiUsuario.obtenerRutaRaiz().subscribe({
+    this.apiPrueba.obtenerRutaRaiz().subscribe({
       next: (res) => console.log('tatas: Respuesta de API:', JSON.stringify(res, null, 2)),
       error: (err) => console.log('tatas: Error detallado:', JSON.stringify(err, null, 2))
     });
@@ -57,6 +59,7 @@ export class LoginPage implements OnInit {
     let respuesta = await lastValueFrom(datos);
     let json_texto = JSON.stringify(respuesta);
     let json = JSON.parse(json_texto);
+    console.log("tatas: ", json.message);
 
     //guardar datos en la lista
     this.db_loginExitoso.id_usuario = json.contenido.id_usuario;

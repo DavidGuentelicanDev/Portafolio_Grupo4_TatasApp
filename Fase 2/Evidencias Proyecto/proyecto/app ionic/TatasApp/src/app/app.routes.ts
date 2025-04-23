@@ -7,10 +7,6 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
   {
-    path: 'prueba-api',
-    loadComponent: () => import('./pages/prueba-api/prueba-api.page').then( m => m.PruebaApiPage)
-  },
-  {
     path: 'login',
     loadComponent: () => import('./pages/login/login.page').then( m => m.LoginPage)
   },
