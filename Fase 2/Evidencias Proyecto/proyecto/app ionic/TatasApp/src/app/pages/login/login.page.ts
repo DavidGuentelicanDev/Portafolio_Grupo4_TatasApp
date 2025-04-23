@@ -7,6 +7,7 @@ import { ApiUsuariosService } from 'src/app/services/api-usuarios.service';
 import { lastValueFrom } from 'rxjs';
 import { UsuarioLogin, UsuarioLoginExitoso } from 'src/app/interfaces/usuario';
 import { DbOffService } from 'src/app/services/db-off.service';
+import { NavigationExtras, Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -36,7 +37,8 @@ export class LoginPage implements OnInit {
   constructor(
     private apiPrueba: ApiPruebaService,
     private apiUsuario: ApiUsuariosService,
-    private dbOff: DbOffService
+    private dbOff: DbOffService,
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -51,23 +53,11 @@ export class LoginPage implements OnInit {
     this.dbOff.crearTablaUsuario();
   }
 
-  //funcion de login
-  //creado por david el 20/04
-  async login() {
-    //enviando los datos
-    let datos = this.apiUsuario.login(this.mdl_usuario.correo, this.mdl_usuario.contrasena);
-    let respuesta = await lastValueFrom(datos);
-    let json_texto = JSON.stringify(respuesta);
-    let json = JSON.parse(json_texto);
-    console.log("tatas: ", json.message);
+  //navegar a principal
+  navegarPrincipal() {
+    let extras: NavigationExtras = {replaceUrl: true};
 
-    //guardar datos en la lista
-    this.db_loginExitoso.id_usuario = json.contenido.id_usuario;
-    this.db_loginExitoso.nombres = json.contenido.nombres;
-    this.db_loginExitoso.tipo_usuario = json.contenido.tipo_usuario;
-    this.db_loginExitoso.token = json.contenido.token;
-
-    this.guardarDatosUsuario(); //guardando los datos de usuario
+    this.router.navigate(["principal"], extras);
   }
 
   //funcion para guardar los datos de usuario
@@ -79,6 +69,38 @@ export class LoginPage implements OnInit {
       this.db_loginExitoso.tipo_usuario,
       this.db_loginExitoso.token
     );
+  }
+
+  //funcion de login
+  //creado por david el 20/04
+  async login() {
+    //validando campos vacios
+    if (!this.mdl_usuario.correo || !this.mdl_usuario.contrasena) {
+      console.log("tatas: Debes ingresar un usuario y/o una contraseña válidos");
+      return;
+    }
+
+    //enviando los datos
+    let datos = this.apiUsuario.login(this.mdl_usuario.correo, this.mdl_usuario.contrasena);
+    let respuesta = await lastValueFrom(datos);
+    let json_texto = JSON.stringify(respuesta);
+    let json = JSON.parse(json_texto);
+
+    //validando respuestas
+    if (json.status == "error") {
+      console.log("tatas: ", json.message);
+    } else if (json.status == "success") {
+      console.log("tatas: ", json.message);
+
+      //guardar datos en la lista
+      this.db_loginExitoso.id_usuario = json.contenido.id_usuario;
+      this.db_loginExitoso.nombres = json.contenido.nombres;
+      this.db_loginExitoso.tipo_usuario = json.contenido.tipo_usuario;
+      this.db_loginExitoso.token = json.contenido.token;
+
+      this.guardarDatosUsuario(); //guardando los datos de usuario
+      this.navegarPrincipal(); //navegar a la pagina principal
+    }
   }
 
 }
