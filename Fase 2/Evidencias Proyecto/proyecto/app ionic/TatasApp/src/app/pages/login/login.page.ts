@@ -18,7 +18,7 @@ import { NavigationExtras, Router } from '@angular/router';
 })
 export class LoginPage implements OnInit {
 
-  //lista para usar la interfaz
+  //lista para usar la interfaz para login
   //creado por david el 20/04
   mdl_usuario: UsuarioLogin = {
     correo: "",
@@ -47,13 +47,10 @@ export class LoginPage implements OnInit {
       next: (res) => console.log('tatas: Respuesta de API:', JSON.stringify(res, null, 2)),
       error: (err) => console.log('tatas: Error detallado:', JSON.stringify(err, null, 2))
     });
-
-    //iniciar tablas
-    this.dbOff.abrirDB();
-    this.dbOff.crearTablaUsuario();
   }
 
   //navegar a principal
+  //creado por david el 22/04
   navegarPrincipal() {
     let extras: NavigationExtras = {replaceUrl: true};
 
@@ -98,7 +95,7 @@ export class LoginPage implements OnInit {
       this.db_loginExitoso.tipo_usuario = json.contenido.tipo_usuario;
       this.db_loginExitoso.token = json.contenido.token;
 
-      this.guardarDatosUsuario(); //guardando los datos de usuario
+      this.guardarDatosUsuario(); //guardando los datos en tabla usuario
       this.navegarPrincipal(); //navegar a la pagina principal
     }
   }
