@@ -53,7 +53,6 @@ export class LoginPage implements OnInit {
   //creado por david el 22/04
   navegarPrincipal() {
     let extras: NavigationExtras = {replaceUrl: true};
-
     this.router.navigate(["principal"], extras);
   }
 

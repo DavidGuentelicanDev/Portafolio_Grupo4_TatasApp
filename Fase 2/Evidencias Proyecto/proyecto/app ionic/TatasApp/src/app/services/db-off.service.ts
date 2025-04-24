@@ -73,4 +73,17 @@ export class DbOffService {
     }
   }
 
+  //borrar usuario logueado (cerrar sesion)
+  //creado por david el 23/04
+  async borrarUsuarioLogueado() {
+    await this.abrirDB();
+
+    try {
+      await this.dbInstancia?.executeSql("DELETE FROM USUARIO", []);
+      console.log("tatas: usuario eliminado");
+    } catch (e) {
+      console.log("tatas: PROBLEMA AL BORRAR DATOS DE USUARIO", JSON.stringify(e));
+    }
+  }
+
 }
