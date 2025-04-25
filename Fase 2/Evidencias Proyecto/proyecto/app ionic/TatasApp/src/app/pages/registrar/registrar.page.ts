@@ -1,3 +1,4 @@
+import { NgZone } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import { AlertController } from '@ionic/angular';
 import { Usuario } from 'src/app/interfaces/usuario';
@@ -6,6 +7,14 @@ import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+
+//declaracion global para google
+declare global {
+  interface Window {
+    google: any;
+  }
+}
 
 @Component({
   selector: 'app-registrar',
@@ -13,58 +22,109 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./registrar.page.scss'],
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule, RouterModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+
 })
 export class RegistrarPage implements OnInit {
+
+   //variables para la direccion
+   direccion: string | null = null;
+   placeAutocompleteElement: any = null;
+
 
   usuario: Usuario = {
     mdl_nombres: '',
     mdl_apellidos: '',
     mdl_fecha_nacimiento: '', // puede ser string inicialmente si se convierte después
     mdl_correo_electronico: '',
-    mdl_telefono:  null,
+    mdl_telefono:  '',
     mdl_tipo_usuario: 0,
     mdl_contrasena: '',
     mdl_confirmarContrasena: '',
     direccion: {
       direccion_texto: '',
-      calle: '',
-      numero: 0,
       adicional: '',
-      comuna: '',
-      region: '',
-      codigo_postal: '',
-      latitud: 0,
-      longitud: 0
     }
   };
 
   constructor(
     private alertController: AlertController,
-    private api: ApiUsuariosService
+    private api: ApiUsuariosService,
+    private zone: NgZone,
 
   ) {}
 
-  ngOnInit() {
-
+  async ngOnInit() {
+    await this.initAutocomplete();
   }
 
+  async initAutocomplete() {
+    try {
+      if (!window.google) {
+        throw new Error('Google Maps API no está cargada');
+      }
+      
+      const { PlaceAutocompleteElement } = await window.google.maps.importLibrary("places");
+      const container = document.getElementById('autocomplete-container');
+      
+      if (container) {
+        // Limpiar el contenedor primero
+        container.innerHTML = '';
+        
+        this.placeAutocompleteElement = new PlaceAutocompleteElement({
+          types: ["address"],
+          componentRestrictions: { country: "cl" }
+        });
+        
+        container.appendChild(this.placeAutocompleteElement);
+        console.log('Elemento autocomplete creado:', this.placeAutocompleteElement);
+        console.log('Contenedor:', container.innerHTML);
+        this.placeAutocompleteElement.addEventListener('place_changed', () => {
+          const place = this.placeAutocompleteElement.getPlace();
+          console.log('llega aca?')
+          if (place?.formatted_address) {
+            this.zone.run(() => {
+              this.usuario.direccion.direccion_texto = place.formatted_address;
+            });
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error inicializando autocomplete:', error);
+      this.presentAlert('Error', 'No se pudo cargar el buscador de direcciones');
+    }
+  }
+  ngAfterViewInit() {
+    const element = document.getElementById('autocomplete');
+  
+    if (element) {
+      console.log('✅ <gmpx-place-autocomplete> encontrado');
+  
+      element.addEventListener('gmpx-placechange', (event: any) => {
+        const place = event.detail;
+        console.log('📦 Evento recibido:', place);
+  
+        if (place.formatted_address) {
+          this.usuario.direccion.direccion_texto = place.formatted_address;
+          console.log('✅ Dirección guardada:', this.usuario.direccion.direccion_texto);
+        }
+      });
+    } else {
+      console.warn('⚠️ No se encontró <gmpx-place-autocomplete>');
+    }
+  }
+  
+  
   async registrarUsuario() {
     const u = this.usuario;
-
+    console.log('🧪 Dato capturado desde el formulario:', this.usuario.direccion.direccion_texto)
     if (
       !u.mdl_nombres ||
       !u.mdl_apellidos ||
       !u.mdl_fecha_nacimiento ||
       !u.direccion.direccion_texto ||
-      !u.direccion.calle ||
-      u.direccion.numero === null || u.direccion.numero === undefined ||
-      !u.direccion.comuna ||
-      !u.direccion.region ||
-      !u.direccion.codigo_postal ||
-      u.direccion.latitud === null || u.direccion.latitud === undefined ||
-      u.direccion.longitud === null || u.direccion.longitud === undefined ||
       !u.mdl_correo_electronico ||
-      u.mdl_telefono === null || u.mdl_telefono === undefined ||
+      !u.mdl_telefono ||
       u.mdl_tipo_usuario === null || u.mdl_tipo_usuario === undefined ||
       !u.mdl_contrasena ||
       !u.mdl_confirmarContrasena
@@ -93,7 +153,7 @@ export class RegistrarPage implements OnInit {
         u.mdl_contrasena,
         u.direccion 
       ).toPromise();
-
+      console.log(u.direccion)
       this.presentAlert('Éxito', 'Usuario creado correctamente');
       this.limpiarFormulario();
 
@@ -132,17 +192,10 @@ export class RegistrarPage implements OnInit {
       mdl_fecha_nacimiento: '',
       direccion: {
         direccion_texto: '',
-        calle: '',
-        numero: 0,
         adicional: '',
-        comuna: '',
-        region: '',
-        codigo_postal: '',
-        latitud: 0,
-        longitud: 0
       },
       mdl_correo_electronico: '',
-      mdl_telefono: 0,
+      mdl_telefono: '',
       mdl_tipo_usuario: 0,
       mdl_contrasena: '',
       mdl_confirmarContrasena: ''

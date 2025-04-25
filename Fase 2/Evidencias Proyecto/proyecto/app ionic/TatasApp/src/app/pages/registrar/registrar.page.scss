@@ -63,3 +63,19 @@
     text-align: center;
     color: #007d8c !important;
   }
+
+  gmpx-place-autocomplete {
+    min-height: 56px;
+    font-size: 16px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    background: white;
+    z-index: 9999;
+    display: block;
+  }
+  #fake-placeholder {
+    position: absolute;
+    pointer-events: none;
+    /* Ajusta el estilo para que coincida con el autocomplete */
+  }

@@ -18,8 +18,7 @@ export class ApiUsuariosService {
     throw new Error('Method not implemented.');
   }
 
-  //private baseUrl = "http://localhost:8000"; //url del servidor local de la api
-  private baseUrl = environment.apiUrl; //url del servidor externo de la api
+  private baseUrl = "https://7a33a53e-f653-4918-b3d4-e7acfcefc43c-00-wq0t0p4r0orv.riker.replit.dev"
 
   constructor(private http: HttpClient , private alertController: AlertController) { }
 
@@ -28,7 +27,7 @@ export class ApiUsuariosService {
     apellidos: string,
     fecha_nacimiento: Date,
     correo: string,
-    telefono: number,
+    telefono: string,
     tipo_usuario: number,
     contrasena: string,
     direccion: Direccion
