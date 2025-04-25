@@ -10,7 +10,7 @@ from sqlalchemy import (
     SmallInteger,
     ForeignKey,
     CheckConstraint,
-    #UniqueConstraint
+    UniqueConstraint
 )
 from sqlalchemy.orm import relationship
 from app.database import Base
@@ -66,20 +66,28 @@ class Usuario(Base):
     def tipo_usuario_nombre(self):
         return self.TIPOS_USUARIO.get(self.tipo_usuario, "Desconocido")
 
-# #tabla familiar (provisoria)
-# class Familiar(Base):
-#     __tablename__ = "FAMILIAR"
+#########################################################################################
 
-#     id = Column(BigInteger, primary_key=True, index=True, autoincrement=True)
-#     adulto_mayor_id = Column(BigInteger, ForeignKey("USUARIO.id"), nullable=False, index=True)
-#     familiar_id = Column(BigInteger, ForeignKey("USUARIO.id"), nullable=False, index=True)
-#     apodo = Column(String(50), nullable=True)
+#tabla familiar
+#creada por Andrea el 25/04
+class Familiar(Base):
+    __tablename__ = "FAMILIAR"
 
-#     # Restricción para evitar duplicados
-#     __table_args__ = (
-#         UniqueConstraint('adulto_mayor_id', 'familiar_id', name='uq_adulto_familiar'),
-#     )
+    id = Column(BigInteger, primary_key=True, index=True, autoincrement=True)
+    
+    adulto_mayor_id = Column(BigInteger, ForeignKey("USUARIO.id"), nullable=False, index=True,)
+    familiar_id = Column(BigInteger, ForeignKey("USUARIO.id"), nullable=False, index=True,)
+    
+    apodo = Column(String(50), nullable=True)
 
-#     # Relaciones bidireccionales
-#     adulto_mayor = relationship("Usuario", foreign_keys=[adulto_mayor_id], backref="familiares_asociados")
-#     familiar = relationship("Usuario", foreign_keys=[familiar_id], backref="adultos_mayores_asociados")
+    # relaciones
+    adulto_mayor = relationship("Usuario", foreign_keys=[adulto_mayor_id], backref="familiares_a_cargo")
+    familiar = relationship("Usuario", foreign_keys=[familiar_id], backref="adultos_mayores")
+
+    # opcional: evitar duplicados con Constraint
+    _table_args_ = (
+        UniqueConstraint("adulto_mayor_id",  "familiar_id", name="uq_adulto_familiar"),
+    )
+
+    adulto_mayor= relationship("Usuario",foreign_keys=[adulto_mayor_id], backref="familiares_asociados")
+    familiar= relationship("Usuario",foreign_keys=[familiar_id], backref="adultos_mayores_asociados")

@@ -11,7 +11,8 @@ from app.schemas import (
     UsuarioCreate,
     UsuarioLogin,
     RespuestaLoginExitoso,
-    RespuestaLoginErronea
+    RespuestaLoginErronea,
+    ContactosRegistrados
 )
 from app.auth.hashing import get_hash_contrasena
 from app.auth.auth import autentificar_usuario
@@ -133,3 +134,23 @@ async def login(datos_login: UsuarioLogin, db: Session = Depends(get_db)):
     respuesta = RespuestaLoginExitoso(contenido=contenido)
 
     return JSONResponse(status_code=200, content=respuesta.model_dump())
+
+#######################################################################################################
+
+#ruta get para obtener los usuarios registrados tipo familiar (1)
+#creada por david y andrea el 25/04
+@usuarios_router.get("/contactos-registrados", response_model=List[ContactosRegistrados])
+def contactos_familiares_registrados(db: Session = Depends(get_db)):
+    usuarios_familiares = db.query(Usuario).filter(Usuario.tipo_usuario == 2).all()
+
+    #se construye la respuesta agregando tipo_usuario_str a cada usuario
+    contactos_registrados_out = []
+    for usuario in usuarios_familiares:
+        usuario_dict = ContactosRegistrados(
+            id_usuario=usuario.id,
+            telefono=usuario.telefono,
+            tipo_usuario=usuario.tipo_usuario
+        )
+        contactos_registrados_out.append(usuario_dict)
+
+    return contactos_registrados_out
