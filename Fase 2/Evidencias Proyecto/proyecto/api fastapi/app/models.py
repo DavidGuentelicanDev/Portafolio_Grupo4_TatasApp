@@ -3,7 +3,6 @@
 
 from sqlalchemy import (
     Column,
-    Integer,
     String,
     Text,
     BigInteger,
@@ -11,8 +10,7 @@ from sqlalchemy import (
     SmallInteger,
     ForeignKey,
     CheckConstraint,
-    Float,
-    UniqueConstraint
+    #UniqueConstraint
 )
 from sqlalchemy.orm import relationship
 from app.database import Base

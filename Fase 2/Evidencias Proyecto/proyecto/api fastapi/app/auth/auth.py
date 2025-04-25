@@ -1,11 +1,9 @@
 # Contiene la lógica de login, verificación de credenciales y creación de tokens JWT.
 # Creado por david el 15/04
 
-from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from app.models import Usuario
 from app.auth.hashing import verificar_contrasena
-from app.schemas import RespuestaLoginErronea, UsuarioLogin, ContenidoLogin, RespuestaLoginExitoso
 
 
 #autentificacion de usuario
