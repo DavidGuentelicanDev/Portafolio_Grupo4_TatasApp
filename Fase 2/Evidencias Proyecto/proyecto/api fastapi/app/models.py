@@ -1,7 +1,19 @@
 # Contiene los modelos ORM que definen las tablas de la base de datos.
 # Creado por david el 15/04
 
-from sqlalchemy import Column, Integer, String, Text, BigInteger, Date, SmallInteger, ForeignKey, CheckConstraint, Float
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    Text,
+    BigInteger,
+    Date,
+    SmallInteger,
+    ForeignKey,
+    CheckConstraint,
+    Float,
+    UniqueConstraint
+)
 from sqlalchemy.orm import relationship
 from app.database import Base
 
@@ -13,14 +25,7 @@ class Direccion(Base):
 
     id = Column(BigInteger, primary_key=True, index=True, autoincrement=True)
     direccion_texto = Column(Text, nullable=False)
-    calle = Column(String(50), nullable=False)
-    numero = Column(Integer, nullable=False)
     adicional = Column(String(100), nullable=True)
-    comuna = Column(String(50), nullable=False)
-    region = Column(String(50), nullable=False)
-    codigo_postal = Column(String(20), nullable=False)
-    latitud = Column(Float, nullable=False)
-    longitud = Column(Float, nullable=False)
 
     #relacion inversa con usuario
     usuarios = relationship("Usuario", back_populates="direccion_rel")
@@ -44,7 +49,7 @@ class Usuario(Base):
     fecha_nacimiento = Column(Date, nullable=False)
     direccion_id = Column(BigInteger, ForeignKey("DIRECCION.id"), nullable=False, index=True)
     correo = Column(String(100), nullable=False, unique=True, index=True)
-    telefono = Column(BigInteger, nullable=False, unique=True, index=True)
+    telefono = Column(String(9), nullable=False, unique=True, index=True)
 
     #definicion especial para tipo_usuario con check
     tipo_usuario = Column(SmallInteger, nullable=False, index=True)
@@ -62,3 +67,21 @@ class Usuario(Base):
     @property
     def tipo_usuario_nombre(self):
         return self.TIPOS_USUARIO.get(self.tipo_usuario, "Desconocido")
+
+# #tabla familiar (provisoria)
+# class Familiar(Base):
+#     __tablename__ = "FAMILIAR"
+
+#     id = Column(BigInteger, primary_key=True, index=True, autoincrement=True)
+#     adulto_mayor_id = Column(BigInteger, ForeignKey("USUARIO.id"), nullable=False, index=True)
+#     familiar_id = Column(BigInteger, ForeignKey("USUARIO.id"), nullable=False, index=True)
+#     apodo = Column(String(50), nullable=True)
+
+#     # Restricción para evitar duplicados
+#     __table_args__ = (
+#         UniqueConstraint('adulto_mayor_id', 'familiar_id', name='uq_adulto_familiar'),
+#     )
+
+#     # Relaciones bidireccionales
+#     adulto_mayor = relationship("Usuario", foreign_keys=[adulto_mayor_id], backref="familiares_asociados")
+#     familiar = relationship("Usuario", foreign_keys=[familiar_id], backref="adultos_mayores_asociados")

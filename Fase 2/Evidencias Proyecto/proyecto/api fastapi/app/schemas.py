@@ -17,14 +17,7 @@ from app.utils.helpers import (
 
 class DireccionOut(BaseModel):
     direccion_texto: str
-    calle: str
-    numero: int
     adicional: Optional[str]
-    comuna: str
-    region: str
-    codigo_postal: str
-    latitud: float
-    longitud: float
 
     class Config:
         from_attributes = True
@@ -34,7 +27,7 @@ class UsuarioOut(BaseModel):
     apellidos: str
     fecha_nacimiento: date
     correo: str
-    telefono: int
+    telefono: str
     tipo_usuario_str: str #cambiado para mostrar el nombre del tipo_usuario
     foto_perfil: Optional[str]
     direccion_rel: DireccionOut
@@ -49,22 +42,11 @@ class UsuarioOut(BaseModel):
 
 class DireccionCreate(BaseModel):
     direccion_texto: str
-    calle: str
-    numero: int
     adicional: Optional[str]
-    comuna: str
-    region: str
-    codigo_postal: str
-    latitud: float
-    longitud: float
 
     #validador string vacio
     _validar_campos_str = validador_no_string_vacio(
-        'direccion_texto',
-        'calle',
-        'comuna',
-        'region',
-        'codigo_postal'
+        'direccion_texto'
     )
 
 class UsuarioCreate(BaseModel):
@@ -72,7 +54,7 @@ class UsuarioCreate(BaseModel):
     apellidos: str
     fecha_nacimiento: date
     correo: str
-    telefono: int
+    telefono: str
     tipo_usuario: int
     contrasena: str
     direccion: DireccionCreate

@@ -73,10 +73,9 @@ def validador_formato_correo(campo: str = 'correo'):
 
 #valida el formato de telefono
 #creado por david el 18/04
-def formato_telefono_valido(telefono: int) -> int:
-    telefono_str = str(telefono) #convierte el telefono a string
-    if not telefono_str.startswith('569') or len(telefono_str) != 11:
-        raise ValueError("El teléfono debe tener formato 569XXXXXXXX (11 dígitos)")
+def formato_telefono_valido(telefono: str) -> str:
+    if not re.match(r'^9\d{8}$', telefono):
+        raise ValueError("El teléfono debe tener formato 9XXXXXXXX (9 dígitos)")
     return telefono
 
 #decorador para validar formato telefono
