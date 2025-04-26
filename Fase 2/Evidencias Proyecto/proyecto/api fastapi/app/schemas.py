@@ -112,3 +112,12 @@ class RespuestaLoginExitoso(BaseModel):
 class RespuestaLoginErronea(BaseModel):
     status: str = "error"
     message: str = "Credenciales inválidas"
+
+###########################################################################################
+
+#esquema para hacer match con los contactos registrados en el telefono
+#creado por david y andrea el 25/04
+class ContactosRegistrados(BaseModel):
+    id_usuario: int
+    telefono: str
+    tipo_usuario: int

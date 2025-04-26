@@ -67,16 +67,15 @@ class Usuario(Base):
         return self.TIPOS_USUARIO.get(self.tipo_usuario, "Desconocido")
 
 #########################################################################################
+
 #tabla familiar
 #creada por Andrea el 25/04
 class Familiar(Base):
     __tablename__ = "FAMILIAR"
 
     id = Column(BigInteger, primary_key=True, index=True, autoincrement=True)
-    
     adulto_mayor_id = Column(BigInteger, ForeignKey("USUARIO.id"), nullable=False, index=True,)
     familiar_id = Column(BigInteger, ForeignKey("USUARIO.id"), nullable=False, index=True,)
-    
     apodo = Column(String(50), nullable=True)
 
     # relaciones
