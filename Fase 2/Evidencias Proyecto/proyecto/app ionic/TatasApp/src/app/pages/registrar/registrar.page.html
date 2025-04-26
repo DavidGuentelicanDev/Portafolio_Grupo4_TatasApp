@@ -17,7 +17,7 @@
       </ion-item>
 
       <ion-item lines="none" class="input-item">
-        <ion-input type="number" [(ngModel)]="usuario.mdl_telefono" name="telefono" placeholder="+569" required></ion-input>
+        <ion-input type="text" [(ngModel)]="usuario.mdl_telefono" name="telefono" placeholder="9XXXXXXXX" required></ion-input>
       </ion-item>
 
       <ion-item lines="none" class="input-item">
@@ -28,13 +28,13 @@
         <ion-input type="text" [(ngModel)]="usuario.mdl_apellidos" name="apellidos" placeholder="APELLIDOS" required></ion-input>
       </ion-item>
       
-
+<!--
       <div class="ion-padding">
-        <!-- Contenedor donde se insertará el autocomplete -->
+        Contenedor donde se insertará el autocomplete 
         <div id="autocomplete-container" ></div>
 
 
-        <!-- Input visible que sí está conectado al modelo -->
+      Input visible que sí está conectado al modelo 
         <ion-item lines="none" class="input-item">
           <ion-label position="floating">Dirección completa</ion-label>
           <ion-input
@@ -45,9 +45,13 @@
             required>
           </ion-input>
         </ion-item>
-      </div>
-
+      </div> 
       
+      -->
+
+      <ion-item lines="none" class="input-item">
+        <ion-input type="text" [(ngModel)]="usuario.direccion.direccion_texto" name="adicional" placeholder="DIRECCION COMPLETA"></ion-input>
+      </ion-item>
 
  
       <ion-item lines="none" class="input-item">
