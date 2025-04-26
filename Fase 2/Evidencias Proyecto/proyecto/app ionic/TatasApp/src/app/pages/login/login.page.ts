@@ -1,0 +1,102 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton } from '@ionic/angular/standalone';
+import { ApiPruebaService } from 'src/app/services/api-prueba.service';
+import { ApiUsuariosService } from 'src/app/services/api-usuarios.service';
+import { lastValueFrom } from 'rxjs';
+import { UsuarioLogin, UsuarioLoginExitoso } from 'src/app/interfaces/usuario';
+import { DbOffService } from 'src/app/services/db-off.service';
+import { NavigationExtras, Router } from '@angular/router';
+
+@Component({
+  selector: 'app-login',
+  templateUrl: './login.page.html',
+  styleUrls: ['./login.page.scss'],
+  standalone: true,
+  imports: [IonButton, IonInput, IonLabel, IonItem, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+})
+export class LoginPage implements OnInit {
+
+  //lista para usar la interfaz para login
+  //creado por david el 20/04
+  mdl_usuario: UsuarioLogin = {
+    correo: "",
+    contrasena: ""
+  };
+
+  //lista para agregar datos de usuario logueado
+  //creado por david el 21/04
+  db_loginExitoso: UsuarioLoginExitoso = {
+    id_usuario: 0,
+    nombres: "",
+    tipo_usuario: 0,
+    token: ""
+  };
+
+  constructor(
+    private apiPrueba: ApiPruebaService,
+    private apiUsuario: ApiUsuariosService,
+    private dbOff: DbOffService,
+    private router: Router
+  ) { }
+
+  ngOnInit() {
+    //ruta raiz de la api
+    this.apiPrueba.obtenerRutaRaiz().subscribe({
+      next: (res) => console.log('tatas: Respuesta de API:', JSON.stringify(res, null, 2)),
+      error: (err) => console.log('tatas: Error detallado:', JSON.stringify(err, null, 2))
+    });
+  }
+
+  //navegar a principal
+  //creado por david el 22/04
+  navegarPrincipal() {
+    let extras: NavigationExtras = {replaceUrl: true};
+    this.router.navigate(["principal"], extras);
+  }
+
+  //funcion para guardar los datos de usuario
+  //creado por david el 22/04
+  async guardarDatosUsuario() {
+    await this.dbOff.guardarDatosLogueoExitoso(
+      this.db_loginExitoso.id_usuario,
+      this.db_loginExitoso.nombres,
+      this.db_loginExitoso.tipo_usuario,
+      this.db_loginExitoso.token
+    );
+  }
+
+  //funcion de login
+  //creado por david el 20/04
+  async login() {
+    //validando campos vacios
+    if (!this.mdl_usuario.correo || !this.mdl_usuario.contrasena) {
+      console.log("tatas: Debes ingresar un usuario y/o una contraseña válidos");
+      return;
+    }
+
+    //enviando los datos
+    let datos = this.apiUsuario.login(this.mdl_usuario.correo, this.mdl_usuario.contrasena);
+    let respuesta = await lastValueFrom(datos);
+    let json_texto = JSON.stringify(respuesta);
+    let json = JSON.parse(json_texto);
+
+    //validando respuestas
+    if (json.status == "error") {
+      console.log("tatas: ", json.message);
+    } else if (json.status == "success") {
+      console.log("tatas: ", json.message);
+
+      //guardar datos en la lista
+      this.db_loginExitoso.id_usuario = json.contenido.id_usuario;
+      this.db_loginExitoso.nombres = json.contenido.nombres;
+      this.db_loginExitoso.tipo_usuario = json.contenido.tipo_usuario;
+      this.db_loginExitoso.token = json.contenido.token;
+
+      this.guardarDatosUsuario(); //guardando los datos en tabla usuario
+      this.navegarPrincipal(); //navegar a la pagina principal
+    }
+  }
+
+}
