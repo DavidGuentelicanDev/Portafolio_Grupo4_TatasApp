@@ -29,7 +29,6 @@ usuarios_router = APIRouter(prefix="/usuarios", tags=["Usuarios"]) #direccion po
 
 #ruta de prueba para usuarios
 #creada por david el 16/04
-
 @usuarios_router.get("/", response_model=List[UsuarioOut])
 def obtener_usuarios(db: Session = Depends(get_db)):
     usuarios = db.query(Usuario).all()
@@ -55,8 +54,7 @@ def obtener_usuarios(db: Session = Depends(get_db)):
 
 #ruta para registrar usuario
 #creada por david el 17/04
-
-@usuarios_router.post("/registro_usuario", status_code=status.HTTP_201_CREATED)
+@usuarios_router.post("/registro_usuario", response_model=UsuarioOut, status_code=status.HTTP_201_CREATED)
 def registrar_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
     #verifica si ya existe usuario con ese correo o telefono (campos unique)
     verificar_campos_unicos(

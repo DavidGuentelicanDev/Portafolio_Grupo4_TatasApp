@@ -7,7 +7,6 @@ import { HttpClient } from '@angular/common/http';
 })
 export class ApiPruebaService {
 
-  //URL de la API, puede cambiar
   private baseUrl = "https://7a33a53e-f653-4918-b3d4-e7acfcefc43c-00-wq0t0p4r0orv.riker.replit.dev";
 
   constructor(
