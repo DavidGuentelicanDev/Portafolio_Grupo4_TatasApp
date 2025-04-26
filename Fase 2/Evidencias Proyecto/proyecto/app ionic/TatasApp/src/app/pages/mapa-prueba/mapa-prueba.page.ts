@@ -4,9 +4,10 @@ import { AlertController, IonicModule } from '@ionic/angular'; // Para mostrar a
 import { LocalNotifications } from '@capacitor/local-notifications'; // Notificaciones en el mismo dispositivo
 import { TextToSpeech } from '@capacitor-community/text-to-speech'; // Para lectura por voz
 import { CommonModule } from '@angular/common';
+import { environmentLocal } from 'src/app/config.local'; //importar api key oculta
 
-// Para usar Google Maps (inserción por script externo en index.html)
-declare var google: any;
+
+declare var google: any; //para usar google maps con la apikey oculta
 
 @Component({
   selector: 'app-mapa-prueba',
@@ -19,8 +20,7 @@ export class MapaPruebaPage implements AfterViewInit {
 
   @ViewChild('map', { static: false }) mapElement!: ElementRef; // Referencia al div del mapa
   map: any; // Instancia del mapa de Google
-  apiKey: string = 'AIzaSyDX8SS5wEK2_4tCQOjh-zb-mxJP7-YsdoY'; // Clave para la API de Google Maps / Geocoding
-  direccion: string = "La Obra 1089, Independencia, Chile"; // Dirección zona segura de prueba
+  direccion: string = "Amunátegui 20, Santiago, Chile"; // Dirección zona segura de prueba
 
   constructor(private alertController: AlertController) {}
 
@@ -57,7 +57,7 @@ export class MapaPruebaPage implements AfterViewInit {
 
   // Función que convierte una dirección en texto a coordenadas (lat, lng)
   async obtenerCoordenadasDesdeDireccion(direccion: string): Promise<{ lat: number, lng: number }> {
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(direccion)}&key=${this.apiKey}`;
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(direccion)}&key=${environmentLocal.googleMapsApiKey}`;
     const res = await fetch(url);
     const data = await res.json();
 
@@ -157,4 +157,5 @@ export class MapaPruebaPage implements AfterViewInit {
       rate: 1.0
     });
   }
+
 }

@@ -163,35 +163,35 @@ def contactos_familiares_registrados(db: Session = Depends(get_db)):
 
 #ruta post para guardar familiares
 #creada por david el 25/04
-@familiares_router.post("/registrar-familiar", status_code=status.HTTP_201_CREATED)
-def registrar_familiar(familiar: FamiliarCreate, db: Session = Depends(get_db)):
-    try:
-        nuevo_familiar = Familiar(**familiar.model_dump())
-        db.add(nuevo_familiar)
-        db.commit()
-        db.refresh(nuevo_familiar)
+# @familiares_router.post("/registrar-familiar", status_code=status.HTTP_201_CREATED)
+# def registrar_familiar(familiar: FamiliarCreate, db: Session = Depends(get_db)):
+#     try:
+#         nuevo_familiar = Familiar(**familiar.model_dump())
+#         db.add(nuevo_familiar)
+#         db.commit()
+#         db.refresh(nuevo_familiar)
 
-        return crear_respuesta_json(
-            status_code=201,
-            message="Familiar registrado correctamente"
-        )
-    except IntegrityError as e:
-        db.rollback()
+#         return crear_respuesta_json(
+#             status_code=201,
+#             message="Familiar registrado correctamente"
+#         )
+#     except IntegrityError as e:
+#         db.rollback()
 
-        if isinstance(e.orig, psycopg2.errors.UniqueViolation):
-            raise HTTPException(
-                status_code=400,
-                detail="Este familiar ya está registrado para este adulto mayor"
-            )
+#         if isinstance(e.orig, psycopg2.errors.UniqueViolation):
+#             raise HTTPException(
+#                 status_code=400,
+#                 detail="Este familiar ya está registrado para este adulto mayor"
+#             )
 
-        raise HTTPException(
-            status_code=500,
-            detail="Error de integridad en la base de datos"
-        )
+#         raise HTTPException(
+#             status_code=500,
+#             detail="Error de integridad en la base de datos"
+#         )
 
-    except Exception as e:
-        db.rollback()
-        raise HTTPException(
-            status_code=500,
-            detail=f"Error al registrar familiar: {str(e)}"
-        )
+#     except Exception as e:
+#         db.rollback()
+#         raise HTTPException(
+#             status_code=500,
+#             detail=f"Error al registrar familiar: {str(e)}"
+#         )

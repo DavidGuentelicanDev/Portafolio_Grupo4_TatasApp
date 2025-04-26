@@ -34,7 +34,7 @@ def root():
 
 #incluye todas las rutas de manera modular de routers.py automaticamente
 app.include_router(usuarios_router)
-app.include_router(familiares_router)
+# app.include_router(familiares_router)
 
 #agregados los handlers
 app.add_exception_handler(RequestValidationError, handler_validacion_excepciones_personalizadas)

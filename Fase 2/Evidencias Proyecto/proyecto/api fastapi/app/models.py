@@ -81,7 +81,7 @@ class Familiar(Base):
     adulto_mayor = relationship("Usuario", foreign_keys=[adulto_mayor_id], backref="familiares_a_cargo")
     familiar = relationship("Usuario", foreign_keys=[familiar_id], backref="adultos_mayores")
 
-    #opcional: evitar duplicados con Constraint
+    #evitar duplicados con unique constraint
     _table_args_ = (
         UniqueConstraint("adulto_mayor_id",  "familiar_id", name="uq_adulto_familiar"),
     )
