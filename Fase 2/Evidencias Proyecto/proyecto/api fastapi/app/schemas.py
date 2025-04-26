@@ -17,14 +17,7 @@ from app.utils.helpers import (
 
 class DireccionOut(BaseModel):
     direccion_texto: str
-    calle: str
-    numero: int
     adicional: Optional[str]
-    comuna: str
-    region: str
-    codigo_postal: str
-    latitud: float
-    longitud: float
 
     class Config:
         from_attributes = True
@@ -34,7 +27,7 @@ class UsuarioOut(BaseModel):
     apellidos: str
     fecha_nacimiento: date
     correo: str
-    telefono: int
+    telefono: str
     tipo_usuario_str: str #cambiado para mostrar el nombre del tipo_usuario
     foto_perfil: Optional[str]
     direccion_rel: DireccionOut
@@ -47,26 +40,13 @@ class UsuarioOut(BaseModel):
 #esquemas para registrar usuario
 #creado por david el 17/04
 
-min_contrasena = 8
-
 class DireccionCreate(BaseModel):
     direccion_texto: str
-    calle: str
-    numero: int
     adicional: Optional[str]
-    comuna: str
-    region: str
-    codigo_postal: str
-    latitud: float
-    longitud: float
 
     #validador string vacio
     _validar_campos_str = validador_no_string_vacio(
-        'direccion_texto',
-        'calle',
-        'comuna',
-        'region',
-        'codigo_postal'
+        'direccion_texto'
     )
 
 class UsuarioCreate(BaseModel):
@@ -74,7 +54,7 @@ class UsuarioCreate(BaseModel):
     apellidos: str
     fecha_nacimiento: date
     correo: str
-    telefono: int
+    telefono: str
     tipo_usuario: int
     contrasena: str
     direccion: DireccionCreate
@@ -95,3 +75,49 @@ class UsuarioCreate(BaseModel):
 
     #validador de formato telefono
     _validar_formato_telefono = validador_formato_telefono('telefono')
+
+###########################################################################################################
+
+#esquemas para login
+
+#esquema de datos para el login
+#creado por david el 20/04
+class UsuarioLogin(BaseModel):
+    correo: str
+    contrasena: str
+
+#esquema para la respuesta del token
+#creado por david el 20/04
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer" #valor por defecto
+
+#esquema para llenar el contenido de la respuesta de login exitoso
+#creado por david el 20/04
+class ContenidoLogin(BaseModel):
+    id_usuario: int
+    nombres: str
+    tipo_usuario: int
+    token: str
+
+#esquema para la respuesta exitosa
+#creado por david el 20/04
+class RespuestaLoginExitoso(BaseModel):
+    status: str = "success"
+    message: str = "Credenciales válidas"
+    contenido: ContenidoLogin
+
+#esquema para la respuesta erronea
+#creado por david el 20/04
+class RespuestaLoginErronea(BaseModel):
+    status: str = "error"
+    message: str = "Credenciales inválidas"
+
+###########################################################################################
+
+#esquema para hacer match con los contactos registrados en el telefono
+#creado por david y andrea el 25/04
+class ContactosRegistrados(BaseModel):
+    id_usuario: int
+    telefono: str
+    tipo_usuario: int
