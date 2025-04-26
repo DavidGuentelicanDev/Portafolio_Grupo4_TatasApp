@@ -8,13 +8,16 @@ import { lastValueFrom } from 'rxjs';
 import { UsuarioLogin, UsuarioLoginExitoso } from 'src/app/interfaces/usuario';
 import { DbOffService } from 'src/app/services/db-off.service';
 import { NavigationExtras, Router } from '@angular/router';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { AlertController,NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonButton, IonInput, IonLabel, IonItem, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [IonButton, IonInput, IonLabel, IonItem, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class LoginPage implements OnInit {
 
@@ -38,7 +41,9 @@ export class LoginPage implements OnInit {
     private apiPrueba: ApiPruebaService,
     private apiUsuario: ApiUsuariosService,
     private dbOff: DbOffService,
-    private router: Router
+    private router: Router,
+    private navCtrl: NavController, 
+    private alertController: AlertController,
   ) { }
 
   ngOnInit() {
@@ -72,7 +77,7 @@ export class LoginPage implements OnInit {
   async login() {
     //validando campos vacios
     if (!this.mdl_usuario.correo || !this.mdl_usuario.contrasena) {
-      console.log("tatas: Debes ingresar un usuario y/o una contraseña válidos");
+      this.presentAlert('Error', 'Debes ingresar un usuario y/o una contraseña válidos');
       return;
     }
 
@@ -97,6 +102,18 @@ export class LoginPage implements OnInit {
       this.guardarDatosUsuario(); //guardando los datos en tabla usuario
       this.navegarPrincipal(); //navegar a la pagina principal
     }
+  }
+  irARegistro(){
+    this.navCtrl.navigateForward('/registrar');
+  }
+
+  async presentAlert(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header,
+      message,
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 
 }
