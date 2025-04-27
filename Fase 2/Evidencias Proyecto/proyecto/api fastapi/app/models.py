@@ -57,6 +57,7 @@ class Usuario(Base):
     direccion_rel = relationship("Direccion", back_populates="usuarios")
     #relaciones inversas con evento, rutina y alerta
     eventos = relationship("Evento", back_populates="usuarios")
+    rutinas = relationship("Rutina", back_populates="usuarios")
 
     #definicion especial para tipo_usuario con check
     __table_args__ = (
@@ -123,3 +124,35 @@ class Evento(Base):
     @property
     def tipo_evento_nombre(self):
         return self.TIPOS_EVENTO.get(self.tipo_evento, "Desconocido")
+
+#########################################################################################
+
+#tabla rutina
+#creada por david el 27/04
+class Rutina(Base):
+    __tablename__ = "RUTINA"
+
+    #diccionario de tipos de rutina
+    TIPOS_RUTINA = {
+        1: "Medicamentos",
+        2: "Ejercicios",
+        3: "Etc..."
+    }
+
+    id = Column(BigInteger, primary_key=True, index=True, autoincrement=True)
+    usuario_id = Column(BigInteger, ForeignKey("USUARIO.id"), nullable=False, index=True)
+    nombre = Column(String(30), nullable=False)
+    descripcion = Column(Text, nullable=True)
+    tipo_rutina = Column(SmallInteger, nullable=False, index=True)
+
+    usuarios = relationship("Usuario", back_populates="rutinas") #relacion con usuario
+
+    #check para tipo_rutina
+    __table_args__ = (
+        CheckConstraint("tipo_rutina BETWEEN 1 AND 3", name="check_tipo_rutina_valido"),
+    )
+
+    #propiedad para leer el string de tipo_evento
+    @property
+    def tipo_rutina_nombre(self):
+        return self.TIPOS_RUTINA.get(self.tipo_rutina, "Desconocido")
