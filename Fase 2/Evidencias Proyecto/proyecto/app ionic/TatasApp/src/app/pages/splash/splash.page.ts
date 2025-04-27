@@ -58,7 +58,7 @@ export class SplashPage implements OnInit {
   //creada por david el 23/04
   navegarPrincipal() {
     let extras: NavigationExtras = {replaceUrl: true};
-    this.router.navigate(["principal"], extras);
+    this.router.navigate(["dashboard-prueba"], extras);
   }
 
 }

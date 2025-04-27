@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonInput, IonButton } from '@ionic/angular/standalone';
 import { ApiPruebaService } from 'src/app/services/api-prueba.service';
 import { ApiUsuariosService } from 'src/app/services/api-usuarios.service';
 import { lastValueFrom } from 'rxjs';
@@ -16,7 +16,7 @@ import { AlertController,NavController } from '@ionic/angular';
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonButton, IonInput, IonLabel, IonItem, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule],
+  imports: [IonButton, IonInput, IonItem, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class LoginPage implements OnInit {
@@ -58,7 +58,7 @@ export class LoginPage implements OnInit {
   //creado por david el 22/04
   navegarPrincipal() {
     let extras: NavigationExtras = {replaceUrl: true};
-    this.router.navigate(["principal"], extras);
+    this.router.navigate(["dashboard-prueba"], extras);
   }
 
   //funcion para guardar los datos de usuario
