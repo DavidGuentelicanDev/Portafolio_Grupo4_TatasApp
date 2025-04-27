@@ -12,7 +12,9 @@ from sqlalchemy import (
     CheckConstraint,
     UniqueConstraint,
     DateTime,
-    Time
+    Time,
+    Float,
+    func
 )
 from sqlalchemy.orm import relationship
 from app.database import Base
@@ -59,6 +61,7 @@ class Usuario(Base):
     #relaciones inversas con evento, rutina y alerta
     eventos = relationship("Evento", back_populates="usuarios")
     rutinas = relationship("Rutina", back_populates="usuarios")
+    alertas = relationship("Alerta", back_populates="usuarios")
 
     #definicion especial para tipo_usuario con check
     __table_args__ = (
@@ -178,3 +181,39 @@ class DiaHora(Base):
     __table_args__ = (
         UniqueConstraint("rutina_id", "dia", "hora", name="uq_rutina_dia_hora"),
     )
+
+#########################################################################################
+
+#tabla alerta
+#creado por david el 27/04
+class Alerta(Base):
+    __tablename__ = "ALERTA"
+
+    #diccionario de tipos de eventos
+    TIPOS_ALERTA = {
+        1: "Zona Segura",
+        2: "Inactividad",
+        3: "Caída",
+        4: "SOS"
+    }
+
+    id = Column(BigInteger, primary_key=True, index=True, autoincrement=True)
+    usuario_id = Column(BigInteger, ForeignKey("USUARIO.id"), nullable=False, index=True)
+    fecha_hora = Column(DateTime(timezone=True), server_default=func.now(), nullable=False, index=True)
+    latitud = Column(Float, nullable=False)
+    longitud = Column(Float, nullable=False)
+    mensaje = Column(Text, nullable=False)
+    tipo_alerta = Column(SmallInteger, nullable=False, index=True)
+
+    #relacion con usuario
+    usuarios = relationship("Usuario", back_populates="alertas")
+
+    #check para tipo_alerta
+    __table_args__ = (
+        CheckConstraint("tipo_alerta BETWEEN 1 AND 4", name="check_tipo_alerta_valido"),
+    )
+
+    #propiedad para leer el string de tipo_evento
+    @property
+    def tipo_alerta_nombre(self):
+        return self.TIPOS_ALERTA.get(self.tipo_alerta, "Desconocido")
