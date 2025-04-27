@@ -11,7 +11,8 @@ from sqlalchemy import (
     ForeignKey,
     CheckConstraint,
     UniqueConstraint,
-    DateTime
+    DateTime,
+    Time
 )
 from sqlalchemy.orm import relationship
 from app.database import Base
@@ -109,7 +110,7 @@ class Evento(Base):
     usuario_id = Column(BigInteger, ForeignKey("USUARIO.id"), nullable=False, index=True)
     nombre = Column(String(30), nullable=False)
     descripcion = Column(Text, nullable=True)
-    fecha_hora = Column(DateTime(timezone=True), nullable=False, index=True)
+    fecha_hora = Column(DateTime, nullable=False, index=True)
     tipo_evento = Column(SmallInteger, nullable=False, index=True)
 
     #relacion con usuario
@@ -146,6 +147,7 @@ class Rutina(Base):
     tipo_rutina = Column(SmallInteger, nullable=False, index=True)
 
     usuarios = relationship("Usuario", back_populates="rutinas") #relacion con usuario
+    dias_horas = relationship("DiaHora", back_populates="rutina") #relacion inversa con dia_hora
 
     #check para tipo_rutina
     __table_args__ = (
@@ -156,3 +158,23 @@ class Rutina(Base):
     @property
     def tipo_rutina_nombre(self):
         return self.TIPOS_RUTINA.get(self.tipo_rutina, "Desconocido")
+
+#########################################################################################
+
+#tabla diahora (relacionada a rutina)
+#creado por david rl 27/04
+class DiaHora(Base):
+    __tablename__ = "DIA_HORA"
+
+    id = Column(BigInteger, primary_key=True, index=True, autoincrement=True)
+    rutina_id = Column(BigInteger, ForeignKey("RUTINA.id"), nullable=False, index=True)
+    dia = Column(Date, nullable=False, index=True)
+    hora = Column(Time, nullable=False, index=True)
+
+    #relacion con rutina
+    rutina = relationship("Rutina", back_populates="dias_horas")
+
+    #restriccion para que no se repita la rutina el mismo dia a la misma hora
+    __table_args__ = (
+        UniqueConstraint("rutina_id", "dia", "hora", name="uq_rutina_dia_hora"),
+    )
