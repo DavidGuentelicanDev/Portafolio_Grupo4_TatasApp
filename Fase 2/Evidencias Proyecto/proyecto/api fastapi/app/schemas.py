@@ -13,7 +13,7 @@ from app.utils.helpers import (
 
 
 #clases para mostrar el usuario con direccion (prueba)
-#creada por david el 16/04
+#creadas por david el 16/04
 
 class DireccionOut(BaseModel):
     direccion_texto: str
@@ -38,8 +38,9 @@ class UsuarioOut(BaseModel):
 ####################################################################################################
 
 #esquemas para registrar usuario
-#creado por david el 17/04
 
+#esquema para guardar direccion
+#creado por david el 17/04
 class DireccionCreate(BaseModel):
     direccion_texto: str
     adicional: Optional[str]
@@ -49,6 +50,8 @@ class DireccionCreate(BaseModel):
         'direccion_texto'
     )
 
+#esquema para guardar usuario completo
+#creado por david el 17/04
 class UsuarioCreate(BaseModel):
     nombres: str
     apellidos: str

@@ -10,7 +10,8 @@ from sqlalchemy import (
     SmallInteger,
     ForeignKey,
     CheckConstraint,
-    UniqueConstraint
+    UniqueConstraint,
+    DateTime
 )
 from sqlalchemy.orm import relationship
 from app.database import Base
@@ -35,7 +36,7 @@ class Direccion(Base):
 class Usuario(Base):
     __tablename__ = "USUARIO"
 
-    #documentacion tipo_usuarios
+    #dict (diccionario) tipo_usuarios
     TIPOS_USUARIO = {
         1: "Adulto Mayor",
         2: "Familiar"
@@ -48,18 +49,19 @@ class Usuario(Base):
     direccion_id = Column(BigInteger, ForeignKey("DIRECCION.id"), nullable=False, index=True)
     correo = Column(String(100), nullable=False, unique=True, index=True)
     telefono = Column(String(9), nullable=False, unique=True, index=True)
-
-    #definicion especial para tipo_usuario con check
     tipo_usuario = Column(SmallInteger, nullable=False, index=True)
-    __table_args__ = (
-        CheckConstraint("tipo_usuario BETWEEN 1 AND 2", name="check_tipo_usuario_valido"),
-    )
-
     contrasena = Column(String(255), nullable=False)
     foto_perfil = Column(Text, nullable=True)
 
     #relacion con tabla direccion
     direccion_rel = relationship("Direccion", back_populates="usuarios")
+    #relaciones inversas con evento, rutina y alerta
+    eventos = relationship("Evento", back_populates="usuarios")
+
+    #definicion especial para tipo_usuario con check
+    __table_args__ = (
+        CheckConstraint("tipo_usuario BETWEEN 1 AND 2", name="check_tipo_usuario_valido"),
+    )
 
     #propiedad que permite leer el tipo de usuario segun el valor int guardado
     @property
@@ -86,3 +88,38 @@ class Familiar(Base):
         UniqueConstraint("adulto_mayor_id",  "familiar_id", name="uq_adulto_familiar"), #unique adulto_mayor_id y familiar_id combinados
         CheckConstraint('adulto_mayor_id <> familiar_id', name='check_ids_distintos') #check para no poder agregar el mismo id de usuario
     )
+
+#########################################################################################
+
+#tabla evento
+#creada por david el 27/04
+class Evento(Base):
+    __tablename__ = "EVENTO"
+
+    #diccionario de tipos de eventos
+    TIPOS_EVENTO = {
+        1: "Cita Médica",
+        2: "Evento Familiar",
+        3: "Evento Personal",
+        4: "No se qué más puede ser"
+    }
+
+    id = Column(BigInteger, primary_key=True, index=True, autoincrement=True)
+    usuario_id = Column(BigInteger, ForeignKey("USUARIO.id"), nullable=False, index=True)
+    nombre = Column(String(30), nullable=False)
+    descripcion = Column(Text, nullable=True)
+    fecha_hora = Column(DateTime(timezone=True), nullable=False, index=True)
+    tipo_evento = Column(SmallInteger, nullable=False, index=True)
+
+    #relacion con usuario
+    usuarios = relationship("Usuario", back_populates="eventos")
+
+    #check para tipo_evento: los limites de int que tendra
+    __table_args__ = (
+        CheckConstraint("tipo_evento BETWEEN 1 AND 4", name="check_tipo_evento_valido"),
+    )
+
+    #propiedad para leer el string de tipo_evento
+    @property
+    def tipo_evento_nombre(self):
+        return self.TIPOS_EVENTO.get(self.tipo_evento, "Desconocido")
