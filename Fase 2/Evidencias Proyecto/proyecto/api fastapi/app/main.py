@@ -4,7 +4,7 @@
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError, HTTPException
 from app.database import Base, engine
-from app.routers import usuarios_router
+from app.routers import usuarios_router, familiares_router
 from app.validations import (
     handler_validacion_excepciones_personalizadas,
     handler_excepciones_http_peronalizadas
@@ -34,6 +34,7 @@ def root():
 
 #incluye todas las rutas de manera modular de routers.py automaticamente
 app.include_router(usuarios_router)
+# app.include_router(familiares_router)
 
 #agregados los handlers
 app.add_exception_handler(RequestValidationError, handler_validacion_excepciones_personalizadas)

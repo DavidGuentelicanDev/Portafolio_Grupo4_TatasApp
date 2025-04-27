@@ -34,5 +34,9 @@ export const routes: Routes = [
     path: 'obtener-contactos',
     loadComponent: () => import('./pages/obtener-contactos/obtener-contactos.page').then( m => m.ObtenerContactosPage)
   },
+  {
+    path: 'registrar',
+    loadComponent: () => import('./pages/registrar/registrar.page').then( m => m.RegistrarPage)
+  },
 
 ];

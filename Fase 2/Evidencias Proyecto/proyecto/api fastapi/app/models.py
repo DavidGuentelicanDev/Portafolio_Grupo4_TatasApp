@@ -51,7 +51,7 @@ class Usuario(Base):
 
     #definicion especial para tipo_usuario con check
     tipo_usuario = Column(SmallInteger, nullable=False, index=True)
-    _table_args_ = (
+    __table_args__ = (
         CheckConstraint("tipo_usuario BETWEEN 1 AND 2", name="check_tipo_usuario_valido"),
     )
 
@@ -81,8 +81,8 @@ class Familiar(Base):
     adulto_mayor = relationship("Usuario", foreign_keys=[adulto_mayor_id], backref="familiares_a_cargo")
     familiar = relationship("Usuario", foreign_keys=[familiar_id], backref="adultos_mayores")
 
-    #opcional: evitar duplicados con Constraint
-    table_args = (
+    #evitar duplicados con unique constraint
+    __table_args__ = (
         UniqueConstraint("adulto_mayor_id",  "familiar_id", name="uq_adulto_familiar"),
     )
 

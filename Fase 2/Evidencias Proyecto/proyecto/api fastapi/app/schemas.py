@@ -121,3 +121,11 @@ class ContactosRegistrados(BaseModel):
     id_usuario: int
     telefono: str
     tipo_usuario: int
+
+###########################################################################################
+
+#esquema para guardar familiares
+#creado por david el 25/04
+# class FamiliarCreate(BaseModel):
+#     adulto_mayor_id: int
+#     familiar_id: int
