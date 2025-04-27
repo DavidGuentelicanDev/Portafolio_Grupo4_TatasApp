@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { DbOffService } from 'src/app/services/db-off.service';
 import { NavigationExtras, Router } from '@angular/router';
+import { ApiPruebaService } from 'src/app/services/api-prueba.service';
 
 @Component({
   selector: 'app-splash',
@@ -19,10 +20,17 @@ export class SplashPage implements OnInit {
 
   constructor(
     private dbOff: DbOffService,
-    private router: Router
+    private router: Router,
+    private apiPrueba: ApiPruebaService
   ) { }
 
   async ngOnInit() {
+    //ruta raiz de la api
+    this.apiPrueba.obtenerRutaRaiz().subscribe({
+      next: (res) => console.log('tatas: Respuesta de API:', JSON.stringify(res, null, 2)),
+      error: (err) => console.log('tatas: Error detallado:', JSON.stringify(err, null, 2))
+    });
+
     this.dbOff.abrirDB(); //habilita la base de datos
     this.dbOff.crearTablaUsuario(); //crea o valida tabla usuario
     this.tokenRegistrado = ""; //vaciar por seguridad
@@ -58,7 +66,7 @@ export class SplashPage implements OnInit {
   //creada por david el 23/04
   navegarPrincipal() {
     let extras: NavigationExtras = {replaceUrl: true};
-    this.router.navigate(["principal"], extras);
+    this.router.navigate(["dashboard-prueba"], extras);
   }
 
 }

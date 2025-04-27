@@ -5,7 +5,7 @@ import { UsuarioLogin } from '../interfaces/usuario';
 import { Direccion } from '../interfaces/direccion';
 import { catchError, tap } from 'rxjs';
 import { AlertController } from '@ionic/angular';
-
+import { environmentLocal } from '../config.local';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +18,7 @@ export class ApiUsuariosService {
   }
 
   //URL de la API, puede cambiar
-  private baseUrl = "https://7a33a53e-f653-4918-b3d4-e7acfcefc43c-00-wq0t0p4r0orv.riker.replit.dev";
+  private baseUrl = environmentLocal.URLbase;
 
   constructor(private http: HttpClient , private alertController: AlertController) { }
 

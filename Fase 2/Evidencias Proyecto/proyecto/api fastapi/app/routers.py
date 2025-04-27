@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 import psycopg2
+from psycopg2 import errors
 from app.services.dependencies import get_db
 from app.models import Usuario, Direccion, Familiar
 from app.schemas import (
@@ -58,7 +59,7 @@ def obtener_usuarios(db: Session = Depends(get_db)):
 
 #ruta para registrar usuario
 #creada por david el 17/04
-@usuarios_router.post("/registro_usuario", response_model=UsuarioOut, status_code=status.HTTP_201_CREATED)
+@usuarios_router.post("/registro_usuario", status_code=status.HTTP_201_CREATED)
 def registrar_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
     #verifica si ya existe usuario con ese correo o telefono (campos unique)
     verificar_campos_unicos(
@@ -103,7 +104,6 @@ def registrar_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
 
 #ruta para login
 #creado por david el 20/04
-
 @usuarios_router.post("/login")
 async def login(datos_login: UsuarioLogin, db: Session = Depends(get_db)):
     #autenticar usuario
@@ -161,35 +161,43 @@ def contactos_familiares_registrados(db: Session = Depends(get_db)):
 
 #ruta post para guardar familiares
 #creada por david el 25/04
-# @familiares_router.post("/registrar-familiar", status_code=status.HTTP_201_CREATED)
-# def registrar_familiar(familiar: FamiliarCreate, db: Session = Depends(get_db)):
-#     try:
-#         nuevo_familiar = Familiar(**familiar.model_dump())
-#         db.add(nuevo_familiar)
-#         db.commit()
-#         db.refresh(nuevo_familiar)
+@familiares_router.post("/registrar-familiar", status_code=status.HTTP_201_CREATED)
+def registrar_familiar(familiar: FamiliarCreate, db: Session = Depends(get_db)):
+    try:
+        nuevo_familiar = Familiar(**familiar.model_dump())
+        db.add(nuevo_familiar)
+        db.commit()
+        db.refresh(nuevo_familiar)
 
-#         return crear_respuesta_json(
-#             status_code=201,
-#             message="Familiar registrado correctamente"
-#         )
-#     except IntegrityError as e:
-#         db.rollback()
+        return crear_respuesta_json(
+            status_code=201,
+            message="Familiar registrado correctamente"
+        )
+    except IntegrityError as e:
+        db.rollback()
 
-#         if isinstance(e.orig, psycopg2.errors.UniqueViolation):
-#             raise HTTPException(
-#                 status_code=400,
-#                 detail="Este familiar ya está registrado para este adulto mayor"
-#             )
+        #captura error de clave unica combinada
+        if isinstance(e.orig, psycopg2.errors.UniqueViolation):
+            raise HTTPException(
+                status_code=400,
+                detail="Este familiar ya está registrado para este adulto mayor"
+            )
 
-#         raise HTTPException(
-#             status_code=500,
-#             detail="Error de integridad en la base de datos"
-#         )
+        #captura error de check de que el adulto mayor no puede guardarse como familiar al mismo tiempo
+        if isinstance(e.orig, errors.CheckViolation):
+            raise HTTPException(
+                status_code=400,
+                detail="El adulto mayor no puede ser su propio familiar"
+            )
 
-#     except Exception as e:
-#         db.rollback()
-#         raise HTTPException(
-#             status_code=500,
-#             detail=f"Error al registrar familiar: {str(e)}"
-#         )
+        raise HTTPException(
+            status_code=500,
+            detail="Error de integridad en la base de datos"
+        )
+
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error al registrar familiar: {str(e)}"
+        )

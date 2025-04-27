@@ -38,7 +38,7 @@
     "cordova-plugin-contacts": "^3.0.0",
     "cordova-plugin-device-motion": "^2.0.1",
     "cordova-sqlite-storage": "^7.0.0",
-    "ionicons": "^7.0.0",
+    "ionicons": "^7.4.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
