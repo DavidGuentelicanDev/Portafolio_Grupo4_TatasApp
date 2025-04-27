@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonInput, IonButton } from '@ionic/angular/standalone';
-import { ApiPruebaService } from 'src/app/services/api-prueba.service';
+import { IonContent, IonHeader, IonItem, IonInput, IonButton } from '@ionic/angular/standalone';
 import { ApiUsuariosService } from 'src/app/services/api-usuarios.service';
 import { lastValueFrom } from 'rxjs';
 import { UsuarioLogin, UsuarioLoginExitoso } from 'src/app/interfaces/usuario';
@@ -16,7 +15,7 @@ import { AlertController,NavController } from '@ionic/angular';
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonButton, IonInput, IonItem, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule],
+  imports: [IonButton, IonInput, IonItem, IonContent, IonHeader, CommonModule, FormsModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class LoginPage implements OnInit {
@@ -38,7 +37,6 @@ export class LoginPage implements OnInit {
   };
 
   constructor(
-    private apiPrueba: ApiPruebaService,
     private apiUsuario: ApiUsuariosService,
     private dbOff: DbOffService,
     private router: Router,
@@ -46,13 +44,7 @@ export class LoginPage implements OnInit {
     private alertController: AlertController,
   ) { }
 
-  ngOnInit() {
-    //ruta raiz de la api
-    this.apiPrueba.obtenerRutaRaiz().subscribe({
-      next: (res) => console.log('tatas: Respuesta de API:', JSON.stringify(res, null, 2)),
-      error: (err) => console.log('tatas: Error detallado:', JSON.stringify(err, null, 2))
-    });
-  }
+  ngOnInit() {}
 
   //navegar a principal
   //creado por david el 22/04

@@ -5,11 +5,20 @@ import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalo
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 
-//importacion para apis
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http'; //importacion para apis
+import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx'; //importacion de sqlite
+import { addIcons } from 'ionicons'; //para usar los ionic icons
+import { locate, calendar, people, personOutline, lockClosedOutline, arrowForwardOutline } from 'ionicons/icons'; //se debe importar cada icono por separado
 
-//importacion de sqlite
-import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
+//registrar iconos antes de iniciar la app
+addIcons({
+  locate,
+  calendar,
+  people,
+  personOutline,
+  lockClosedOutline,
+  arrowForwardOutline
+});
 
 bootstrapApplication(AppComponent, {
   providers: [
