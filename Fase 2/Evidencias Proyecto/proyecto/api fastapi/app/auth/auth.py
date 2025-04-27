@@ -15,6 +15,5 @@ def autentificar_usuario(db: Session, correo: str, contrasena: str) -> Usuario |
     #si usuario no existe o no coincide con la contraseña: error
     if not usuario or not verificar_contrasena(contrasena, usuario.contrasena):
         return None
-
     #si todo esta bien, devuelve el usuario
     return usuario

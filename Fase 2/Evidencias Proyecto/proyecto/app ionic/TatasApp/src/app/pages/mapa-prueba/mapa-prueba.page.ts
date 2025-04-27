@@ -6,7 +6,6 @@ import { TextToSpeech } from '@capacitor-community/text-to-speech'; // Para lect
 import { CommonModule } from '@angular/common';
 import { environmentLocal } from 'src/app/config.local'; //importar api key oculta
 
-
 declare var google: any; //para usar google maps con la apikey oculta
 
 @Component({

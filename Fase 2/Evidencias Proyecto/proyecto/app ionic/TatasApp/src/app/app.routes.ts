@@ -11,6 +11,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/login/login.page').then( m => m.LoginPage)
   },
   {
+    path: 'registrar',
+    loadComponent: () => import('./pages/registrar/registrar.page').then( m => m.RegistrarPage)
+  },
+  {
     path: 'principal',
     loadComponent: () => import('./pages/principal/principal.page').then( m => m.PrincipalPage)
   },
@@ -34,8 +38,5 @@ export const routes: Routes = [
     path: 'registrar',
     loadComponent: () => import('./pages/registrar/registrar.page').then( m => m.RegistrarPage)
   },
-
-
-
 
 ];
