@@ -78,13 +78,11 @@ class Familiar(Base):
     familiar_id = Column(BigInteger, ForeignKey("USUARIO.id"), nullable=False, index=True,)
 
     #relaciones
-    adulto_mayor = relationship("Usuario", foreign_keys=[adulto_mayor_id], backref="familiares_a_cargo")
-    familiar = relationship("Usuario", foreign_keys=[familiar_id], backref="adultos_mayores")
+    adulto_mayor = relationship("Usuario", foreign_keys=[adulto_mayor_id], backref="familiares_asociados")
+    familiar = relationship("Usuario", foreign_keys=[familiar_id], backref="adultos_mayores_asociados")
 
-    #evitar duplicados con unique constraint
+    #restricciones
     __table_args__ = (
-        UniqueConstraint("adulto_mayor_id",  "familiar_id", name="uq_adulto_familiar"),
+        UniqueConstraint("adulto_mayor_id",  "familiar_id", name="uq_adulto_familiar"), #unique adulto_mayor_id y familiar_id combinados
+        CheckConstraint('adulto_mayor_id <> familiar_id', name='check_ids_distintos') #check para no poder agregar el mismo id de usuario
     )
-
-    adulto_mayor= relationship("Usuario",foreign_keys=[adulto_mayor_id], backref="familiares_asociados")
-    familiar= relationship("Usuario",foreign_keys=[familiar_id], backref="adultos_mayores_asociados")
