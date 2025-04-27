@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-//importaciones para conectar a la api
 import { HttpClient } from '@angular/common/http';
+import { environmentLocal } from '../config.local';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiPruebaService {
 
-  private baseUrl = "https://7a33a53e-f653-4918-b3d4-e7acfcefc43c-00-wq0t0p4r0orv.riker.replit.dev";
+  private baseUrl = environmentLocal.URLbase;
 
   constructor(
     private http: HttpClient, //dependencia para conectar la api
