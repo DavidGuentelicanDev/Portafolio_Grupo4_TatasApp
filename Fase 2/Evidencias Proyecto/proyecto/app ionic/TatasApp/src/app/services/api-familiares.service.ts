@@ -1,17 +1,19 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { FamiliarRegistrado } from '../interfaces/familiar-registrado';
+import { FamiliarRegistrado } from '../interfaces/familiar';
 import { environmentLocal } from '../config.local';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ApiObtenerContactosService {
+export class ApiFamiliaresService {
 
-  private baseUrl = environmentLocal.URLbase; // RUTA API
+  private baseUrl = environmentLocal.URLbase;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient
+  ) { }
 
   // AHORA RETORNA UN ARRAY de familiares registrados
   obtenerContactosFamiliar(): Observable<FamiliarRegistrado[]> {

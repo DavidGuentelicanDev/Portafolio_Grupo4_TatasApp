@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { Contacts, ContactFieldType } from '@awesome-cordova-plugins/contacts/ngx';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import { ApiObtenerContactosService } from 'src/app/services/api-obtener-contactos.service';
+import { ApiFamiliaresService } from 'src/app/services/api-familiares.service';
 import { lastValueFrom } from 'rxjs';
-import { FamiliarRegistrado } from 'src/app/interfaces/familiar-registrado';
+import { FamiliarRegistrado } from 'src/app/interfaces/familiar';
 
 @Component({
   selector: 'app-obtener-contactos',
@@ -27,7 +27,7 @@ export class ObtenerContactosPage {
 
   constructor(
     private contacts: Contacts,
-    private apiObtenerContactos: ApiObtenerContactosService
+    private apiFamiliares: ApiFamiliaresService
   ) {}
 
   // Obtiene contactos del teléfono y normaliza números
@@ -56,7 +56,7 @@ export class ObtenerContactosPage {
   async obtenerContactosApi() {
     try {
       const data: FamiliarRegistrado[] = await lastValueFrom(
-        this.apiObtenerContactos.obtenerContactosFamiliar()
+        this.apiFamiliares.obtenerContactosFamiliar()
       );
 
       this.contactosApi = data.map(contacto => ({
