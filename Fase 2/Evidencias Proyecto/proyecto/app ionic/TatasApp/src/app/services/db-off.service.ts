@@ -86,4 +86,29 @@ export class DbOffService {
     }
   }
 
+//obtener datos usuario logueado
+//creado por Ale 03/05/2025
+
+// Obtener datos completos del usuario logueado
+async obtenerDatosUsuario() {
+  await this.abrirDB();
+
+  try {
+    let data = await this.dbInstancia?.executeSql("SELECT * FROM USUARIO", []);
+    if (data?.rows.length > 0) {
+      return {
+        id_usuario: data.rows.item(0).ID_USUARIO,
+        nombres: data.rows.item(0).NOMBRES,
+        tipo_usuario: data.rows.item(0).TIPO_USUARIO,
+        token: data.rows.item(0).TOKEN
+      };
+    }
+    return null;
+  } catch (e) {
+    console.log('tatas: ', JSON.stringify(e));
+    return null;
+  }
+}
+
+
 }

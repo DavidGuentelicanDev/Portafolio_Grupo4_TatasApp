@@ -1,40 +1,61 @@
-import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
-import { Geolocation } from '@capacitor/geolocation'; // Para obtener ubicación actual
-import { AlertController, IonicModule } from '@ionic/angular'; // Para mostrar alertas tipo modal
-import { LocalNotifications } from '@capacitor/local-notifications'; // Notificaciones en el mismo dispositivo
-import { TextToSpeech } from '@capacitor-community/text-to-speech'; // Para lectura por voz
+import { Component, AfterViewInit, ViewChild, ElementRef, inject } from '@angular/core';
+import { Geolocation } from '@capacitor/geolocation';
+import { AlertController, IonicModule } from '@ionic/angular';
+import { TextToSpeech } from '@capacitor-community/text-to-speech';
 import { CommonModule } from '@angular/common';
-import { environmentLocal } from 'src/app/config.local'; //importar api key oculta
+import { environmentLocal } from 'src/app/config.local';
+import { ApiUsuariosService } from 'src/app/services/api-usuarios.service';
+import { DbOffService } from 'src/app/services/db-off.service';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-declare var google: any; //para usar google maps con la apikey oculta
+declare var google: any;
 
 @Component({
   selector: 'app-mapa-prueba',
-  standalone: true, // Componente standalone
+  standalone: true,
   imports: [CommonModule, IonicModule],
   templateUrl: './mapa-prueba.page.html',
   styleUrls: ['./mapa-prueba.page.scss'],
 })
 export class MapaPruebaPage implements AfterViewInit {
 
-  @ViewChild('map', { static: false }) mapElement!: ElementRef; // Referencia al div del mapa
-  map: any; // Instancia del mapa de Google
-  direccion: string = "Amunátegui 20, Santiago, Chile"; // Dirección zona segura de prueba
+  @ViewChild('map', { static: false }) mapElement!: ElementRef;
+  map: any;
+  direccionUsuario: string = '';
+  id_usuario: number = 0;
 
-  constructor(private alertController: AlertController) {}
+  // Inyección de servicios
+  private alertController = inject(AlertController);
+  private apiUsuario = inject(ApiUsuariosService);
+  private dbOff = inject(DbOffService);
+  private http = inject(HttpClient);
 
   async ngAfterViewInit() {
     try {
-      // Solicita permisos para notificaciones locales
-      await LocalNotifications.requestPermissions();
+      // Obtener ID usuario logueado desde SQLite
+      const usuario = await this.dbOff.obtenerDatosUsuario();
+      if (!usuario) {
+        console.error("No se encontraron datos del usuario.");
+        return; // o podrías redirigir al login
+      }
+      
+      this.id_usuario = usuario.id_usuario;
 
-      // Convierte la dirección fija a coordenadas (lat/lng)
-      const zonaSegura = await this.obtenerCoordenadasDesdeDireccion(this.direccion);
+      // Obtener dirección del usuario desde la API
+      const datosUsuario: any = await this.http
+        .get(`${environmentLocal.URLbase}/usuarios/${this.id_usuario}`)
+        .toPromise();
 
-      // Obtiene la ubicación actual del usuario
+      this.direccionUsuario = datosUsuario?.direccion_rel?.direccion_texto;
+      if (!this.direccionUsuario) throw new Error("Dirección no encontrada");
+
+      // Obtener coordenadas de la dirección
+      const zonaSegura = await this.obtenerCoordenadasDesdeDireccion(this.direccionUsuario);
+
+      // Obtener ubicación actual
       const currentPosition = await Geolocation.getCurrentPosition({
         enableHighAccuracy: true,
-        timeout: 10000, // 10 segundos
+        timeout: 10000,
         maximumAge: 0
       });
       const currentLatLng = {
@@ -42,19 +63,15 @@ export class MapaPruebaPage implements AfterViewInit {
         lng: currentPosition.coords.longitude,
       };
 
-      // Inicializa el mapa con los marcadores y círculos
       this.inicializarMapa(currentLatLng, zonaSegura);
-
-      // Compara la distancia entre el usuario y la zona segura
       this.compararDistancia(currentLatLng, zonaSegura);
 
     } catch (error) {
       console.error('Error general:', error);
-      this.mostrarAlerta('Error', 'No se pudo cargar el mapa o la ubicación.');
+      this.mostrarAlerta('Error', 'No se pudo obtener la ubicación o dirección del usuario.');
     }
   }
 
-  // Función que convierte una dirección en texto a coordenadas (lat, lng)
   async obtenerCoordenadasDesdeDireccion(direccion: string): Promise<{ lat: number, lng: number }> {
     const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(direccion)}&key=${environmentLocal.googleMapsApiKey}`;
     const res = await fetch(url);
@@ -67,14 +84,12 @@ export class MapaPruebaPage implements AfterViewInit {
     }
   }
 
-  // Carga y dibuja el mapa con dos marcadores y un círculo de 100m de radio
   inicializarMapa(actual: { lat: number, lng: number }, zona: { lat: number, lng: number }) {
     this.map = new google.maps.Map(this.mapElement.nativeElement, {
       center: actual,
       zoom: 18
     });
 
-    // Marcador azul en la ubicación actual
     new google.maps.Marker({
       position: actual,
       map: this.map,
@@ -82,7 +97,6 @@ export class MapaPruebaPage implements AfterViewInit {
       icon: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
     });
 
-    // Círculo verde representando la zona segura
     new google.maps.Circle({
       strokeColor: '#00FF00',
       strokeOpacity: 0.8,
@@ -91,10 +105,9 @@ export class MapaPruebaPage implements AfterViewInit {
       fillOpacity: 0.35,
       map: this.map,
       center: zona,
-      radius: 100 // en metros
+      radius: 100
     });
 
-    // Marcador verde en la zona segura
     new google.maps.Marker({
       position: zona,
       map: this.map,
@@ -103,17 +116,16 @@ export class MapaPruebaPage implements AfterViewInit {
     });
   }
 
-  // Calcula la distancia entre el usuario y la zona segura
   async compararDistancia(actual: { lat: number, lng: number }, zona: { lat: number, lng: number }) {
     const distancia = google.maps.geometry.spherical.computeDistanceBetween(
       new google.maps.LatLng(actual.lat, actual.lng),
       new google.maps.LatLng(zona.lat, zona.lng)
     );
 
-    // Si está fuera de la zona segura (> 10m), se lanza alerta, voz y notificación
     if (distancia > 100) {
       const mensaje = `¡Alerta! Estás fuera de la zona segura. Distancia: ${distancia.toFixed(0)} metros.`;
-      await this.lanzarNotificacionLocal(distancia);
+      const urlUbicacion = `https://www.google.com/maps?q=${actual.lat},${actual.lng}`;
+      await this.enviarAlerta(actual.lat, actual.lng, urlUbicacion);
       await this.hablar(mensaje);
       this.mostrarAlerta('Fuera de la zona segura', mensaje);
     } else {
@@ -121,34 +133,30 @@ export class MapaPruebaPage implements AfterViewInit {
     }
   }
 
-  // Muestra una notificación local con el mensaje de alerta
-  async lanzarNotificacionLocal(distancia: number) {
-    await LocalNotifications.schedule({
-      notifications: [
-        {
-          title: 'Alerta de ubicación',
-          body: `¡Estás fuera de la zona segura! Distancia: ${distancia.toFixed(1)} mts`,
-          id: 1,
-          sound: 'beep.caf',
-          smallIcon: 'res://icon',
-          iconColor: '#ff0000'
-        }
-      ]
-    });
+  async enviarAlerta(lat: number, lng: number, url: string) {
+    const alerta = {
+      usuario_id: this.id_usuario,
+      ubicacion: url,
+      mensaje: 'El adulto mayor ha salido de la zona segura.',
+      tipo_alerta: 1
+    };
+
+    try {
+      await this.http.post(`${environmentLocal.URLbase}/alertas/crear`, alerta).toPromise();
+    } catch (err) {
+      console.error('Error al enviar alerta:', err);
+    }
   }
 
-  // Muestra una alerta visual (modal) en pantalla
   async mostrarAlerta(titulo: string, mensaje: string) {
     const alert = await this.alertController.create({
       header: titulo,
       message: mensaje,
       buttons: ['OK']
     });
-
     await alert.present();
   }
 
-  // Usa texto a voz para anunciar el mensaje de alerta
   async hablar(mensaje: string) {
     await TextToSpeech.speak({
       text: mensaje,
@@ -156,5 +164,4 @@ export class MapaPruebaPage implements AfterViewInit {
       rate: 1.0
     });
   }
-
 }
