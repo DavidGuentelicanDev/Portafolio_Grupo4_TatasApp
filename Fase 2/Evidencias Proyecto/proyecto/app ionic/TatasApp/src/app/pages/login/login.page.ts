@@ -50,7 +50,7 @@ export class LoginPage implements OnInit {
   //creado por david el 22/04
   navegarPrincipal() {
     let extras: NavigationExtras = {replaceUrl: true};
-    this.router.navigate(["dashboard-prueba"], extras);
+    this.router.navigate(["principal"], extras);
   }
 
   //funcion para guardar los datos de usuario
@@ -95,10 +95,15 @@ export class LoginPage implements OnInit {
       this.navegarPrincipal(); //navegar a la pagina principal
     }
   }
-  irARegistro(){
-    this.navCtrl.navigateForward('/registrar');
+
+  //metodo para navegar al registro
+  //creado por andrea el 30/04
+  navegarRegistro() {
+    this.router.navigate(["registro"]);
   }
 
+  //metodo para mostrar alertas a respuestas del login
+  //creado por andrea el 30/04
   async presentAlert(header: string, message: string) {
     const alert = await this.alertController.create({
       header,

@@ -28,6 +28,8 @@ export class DbOffService {
     }
   }
 
+//METODOS DE LA DB LOCAL PARA USUARIO
+
   //crear tabla usuario
   //creado por david el 21/04
   async crearTablaUsuario() {
@@ -83,6 +85,29 @@ export class DbOffService {
       console.log("tatas: usuario eliminado");
     } catch (e) {
       console.log("tatas: PROBLEMA AL BORRAR DATOS DE USUARIO", JSON.stringify(e));
+    }
+  }
+
+  //obtener datos de usuario logueado (menos el token)
+  //creado por david el 28/04
+  async obtenerDatosUsuarioLogueado() {
+    await this.abrirDB();
+
+    try {
+      let data = await this.dbInstancia?.executeSql("SELECT ID_USUARIO, NOMBRES, TIPO_USUARIO FROM USUARIO", []);
+
+      if (data?.rows.length > 0) {
+        console.log('tatas: se obtiene usuario logueado');
+        return {
+          id_usuario: data.rows.item(0).ID_USUARIO,
+          nombres: data.rows.item(0).NOMBRES,
+          tipo_usuario: data.rows.item(0).TIPO_USUARIO
+        };
+      }
+      return null;
+    } catch (e) {
+      console.log('tatas: ', JSON.stringify(e));
+      return null;
     }
   }
 
