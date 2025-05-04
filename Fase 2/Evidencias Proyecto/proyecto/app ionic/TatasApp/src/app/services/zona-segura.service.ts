@@ -9,6 +9,7 @@ import { ApiUsuariosService } from '../services/api-usuarios.service';
 import { HttpClient } from '@angular/common/http';
 import { environmentLocal } from '../config.local';
 
+
 declare var google: any;
 
 @Injectable({ providedIn: 'root' })
@@ -107,4 +108,41 @@ export class ZonaSeguraService {
       rate: 1.0
     });
   }
+
+//SERVICIO PARA REGISTRAR ALERTA DEL BOTON SOS
+//CREADO POR ALE 04-05-2025
+async enviarAlertaSOSDesdeBoton() {
+  try {
+    const usuario = await this.dbOff.obtenerDatosUsuario();
+    if (!usuario) {
+      console.error("No se encontraron datos del usuario.");
+      return;
+    }
+
+    this.id_usuario = usuario.id_usuario;
+
+    const position = await Geolocation.getCurrentPosition();
+    const ubicacion = `https://www.google.com/maps?q=${position.coords.latitude},${position.coords.longitude}`;
+
+    const alerta = {
+      usuario_id: this.id_usuario,
+      ubicacion: ubicacion,
+      mensaje: 'Botón SOS presionado',
+      tipo_alerta: 4 
+    };
+
+    await this.http.post(`${environmentLocal.URLbase}/alertas/crear`, alerta).toPromise();
+    await this.hablar('Alerta SOS activada');
+
+  } catch (err) {
+    console.error("Error al enviar alerta SOS desde botón:", err);
+  }
+}
+
+//servicio para obtener registro de alertas
+//creado por ale 04-05-2025
+getAlertasPorFamiliar(idFamiliar: number): Promise<any> {
+  return this.http.get(`${environmentLocal.URLbase}/alertas/familiar/${idFamiliar}`).toPromise();
+}
+
 }

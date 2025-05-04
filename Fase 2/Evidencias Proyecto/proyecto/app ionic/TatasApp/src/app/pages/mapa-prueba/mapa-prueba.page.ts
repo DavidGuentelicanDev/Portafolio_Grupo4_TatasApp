@@ -164,4 +164,9 @@ export class MapaPruebaPage implements AfterViewInit {
       rate: 1.0
     });
   }
+
+
+
+  
 }
+
