@@ -1,6 +1,5 @@
 // Servicio para verificar zona segura y enviar alerta push si se sale de ella
 // Creado por Ale - actualizado 03/05/2025
-
 import { Injectable, inject } from '@angular/core';
 import { Geolocation } from '@capacitor/geolocation';
 import { TextToSpeech } from '@capacitor-community/text-to-speech';
@@ -9,22 +8,27 @@ import { ApiUsuariosService } from '../services/api-usuarios.service';
 import { HttpClient } from '@angular/common/http';
 import { environmentLocal } from '../config.local';
 
-
 declare var google: any;
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class ZonaSeguraService {
-  private dbOff = inject(DbOffService);
-  private apiUsuario = inject(ApiUsuariosService);
-  private http = inject(HttpClient);
 
   private id_usuario: number = 0;
   private direccionUsuario: string = '';
+  private baseUrl = environmentLocal.URLbase;
+
+  constructor(
+    private dbOff: DbOffService,
+    private apiUsuario: ApiUsuariosService,
+    private http: HttpClient
+  ) { }
 
   iniciarVerificacion() {
     setInterval(async () => {
       try {
-        const usuario = await this.dbOff.obtenerDatosUsuario();
+        const usuario = await this.dbOff.obtenerDatosUsuarioLogueado();
         if (!usuario) {
           console.error("No se encontraron datos del usuario.");
           return;
@@ -33,8 +37,8 @@ export class ZonaSeguraService {
         this.id_usuario = usuario.id_usuario;
 
         const datosUsuario: any = await this.http
-          .get(`${environmentLocal.URLbase}/usuarios/${this.id_usuario}`)
-          .toPromise();
+          .get(`${this.baseUrl}/usuarios/${this.id_usuario}`)
+          .pipe();
 
         this.direccionUsuario = datosUsuario?.direccion_rel?.direccion_texto;
         if (!this.direccionUsuario) throw new Error("Dirección no encontrada");
@@ -95,7 +99,7 @@ export class ZonaSeguraService {
     };
 
     try {
-      await this.http.post(`${environmentLocal.URLbase}/alertas/crear`, alerta).toPromise();
+      await this.http.post(`${this.baseUrl}/alertas/crear-alerta`, alerta).pipe();
     } catch (err) {
       console.error('Error al enviar alerta al backend:', err);
     }
@@ -109,40 +113,10 @@ export class ZonaSeguraService {
     });
   }
 
-//SERVICIO PARA REGISTRAR ALERTA DEL BOTON SOS
-//CREADO POR ALE 04-05-2025
-async enviarAlertaSOSDesdeBoton() {
-  try {
-    const usuario = await this.dbOff.obtenerDatosUsuario();
-    if (!usuario) {
-      console.error("No se encontraron datos del usuario.");
-      return;
-    }
-
-    this.id_usuario = usuario.id_usuario;
-
-    const position = await Geolocation.getCurrentPosition();
-    const ubicacion = `https://www.google.com/maps?q=${position.coords.latitude},${position.coords.longitude}`;
-
-    const alerta = {
-      usuario_id: this.id_usuario,
-      ubicacion: ubicacion,
-      mensaje: 'Botón SOS presionado',
-      tipo_alerta: 4 
-    };
-
-    await this.http.post(`${environmentLocal.URLbase}/alertas/crear`, alerta).toPromise();
-    await this.hablar('Alerta SOS activada');
-
-  } catch (err) {
-    console.error("Error al enviar alerta SOS desde botón:", err);
-  }
-}
-
-//servicio para obtener registro de alertas
-//creado por ale 04-05-2025
-getAlertasPorFamiliar(idFamiliar: number): Promise<any> {
-  return this.http.get(`${environmentLocal.URLbase}/alertas/familiar/${idFamiliar}`).toPromise();
-}
+  //servicio para obtener registro de alertas
+  //creado por ale 04-05-2025
+  // getAlertasPorFamiliar(idFamiliar: number): Promise<any> {
+  //   return this.http.get(`${this.baseUrl}/alertas/crear-alerta/${idFamiliar}`).toPromise();
+  // }
 
 }

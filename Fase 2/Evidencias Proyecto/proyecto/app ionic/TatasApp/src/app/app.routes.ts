@@ -23,26 +23,31 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/splash/splash.page').then( m => m.SplashPage)
   },
   {
-    path: 'dashboard-prueba',
-    loadComponent: () => import('./pages/dashboard-prueba/dashboard-prueba.page').then( m => m.DashboardPruebaPage)
-  },
-  {
     path: 'mapa-prueba',
     loadComponent: () => import('./pages/mapa-prueba/mapa-prueba.page').then( m => m.MapaPruebaPage)
-  },
-  {
-    path: 'obtener-contactos',
-    loadComponent: () => import('./pages/obtener-contactos/obtener-contactos.page').then( m => m.ObtenerContactosPage)
   },
   {
     path: 'registrar',
     loadComponent: () => import('./pages/registrar/registrar.page').then( m => m.RegistrarPage)
   },
-
   {
+    path: 'eventos',
+    loadComponent: () => import('./pages/eventos/eventos.page').then( m => m.EventosPage)
+  },
+  {
+    path: 'crear-evento',
+    loadComponent: () => import('./pages/crear-evento/crear-evento.page').then( m => m.CrearEventoPage)
+  },
+  {
+    path: 'familiares',
+    loadComponent: () => import('./pages/familiares/familiares.page').then( m => m.FamiliaresPage)
+  },
+  {
+    path: 'agregar-familiar',
+    loadComponent: () => import('./pages/agregar-familiar/agregar-familiar.page').then( m => m.AgregarFamiliarPage)
+  },  {
     path: 'registro-alarmas',
     loadComponent: () => import('./pages/registro-alarmas/registro-alarmas.page').then( m => m.RegistroAlarmasPage)
   },
-
 
 ];

@@ -33,10 +33,28 @@ export class SplashPage implements OnInit {
 
     this.dbOff.abrirDB(); //habilita la base de datos
     this.dbOff.crearTablaUsuario(); //crea o valida tabla usuario
+    await this.validarToken(); //llamar validacion de token, modificado por david el 01/05
+  }
+
+  //funcion para navegar al login
+  //creada por david el 23/04
+  navegarLogin() {
+    let extras: NavigationExtras = {replaceUrl: true};
+    this.router.navigate(["login"], extras);
+  }
+
+  //funcion para navegar al principal
+  //creada por david el 23/04
+  navegarPrincipal() {
+    let extras: NavigationExtras = {replaceUrl: true};
+    this.router.navigate(["principal"], extras);
+  }
+
+  //validar que haya token de usuario registrado
+  //creado por david el 01/05
+  async validarToken() {
     this.tokenRegistrado = ""; //vaciar por seguridad
 
-    //validar que haya token de usuario registrado
-    //creado por david el 23/04
     let usuario = await this.dbOff.obtenerTokenUsuarioLogueado();
 
     if (usuario) {
@@ -53,20 +71,6 @@ export class SplashPage implements OnInit {
         this.navegarLogin();
       }, 1500);
     }
-  }
-
-  //funcion para navegar al login
-  //creada por david el 23/04
-  navegarLogin() {
-    let extras: NavigationExtras = {replaceUrl: true};
-    this.router.navigate(["login"], extras);
-  }
-
-  //funcion para navegar al principal
-  //creada por david el 23/04
-  navegarPrincipal() {
-    let extras: NavigationExtras = {replaceUrl: true};
-    this.router.navigate(["dashboard-prueba"], extras);
   }
 
 }

@@ -1,5 +1,7 @@
 import { Direccion } from "./direccion";
 
+//interfaz para el registro de usuario
+//creado por andrea el 19/04
 export interface Usuario {
     mdl_nombres: string;
     mdl_apellidos: string;
@@ -26,4 +28,12 @@ export interface UsuarioLoginExitoso {
     nombres: string
     tipo_usuario: number
     token: string
+}
+
+//interfaz para obtener los datos del usuario logueado
+//creado por david el 28/04
+export interface UsuarioLogueado {
+    id_usuario: number
+    nombres: string
+    tipo_usuario: number
 }

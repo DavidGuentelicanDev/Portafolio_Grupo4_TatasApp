@@ -28,6 +28,8 @@ export class DbOffService {
     }
   }
 
+//METODOS DE LA DB LOCAL PARA USUARIO
+
   //crear tabla usuario
   //creado por david el 21/04
   async crearTablaUsuario() {
@@ -86,29 +88,27 @@ export class DbOffService {
     }
   }
 
-//obtener datos usuario logueado
-//creado por Ale 03/05/2025
+  //obtener datos de usuario logueado (menos el token)
+  //creado por david el 28/04
+  async obtenerDatosUsuarioLogueado() {
+    await this.abrirDB();
 
-// Obtener datos completos del usuario logueado
-async obtenerDatosUsuario() {
-  await this.abrirDB();
+    try {
+      let data = await this.dbInstancia?.executeSql("SELECT ID_USUARIO, NOMBRES, TIPO_USUARIO FROM USUARIO", []);
 
-  try {
-    let data = await this.dbInstancia?.executeSql("SELECT * FROM USUARIO", []);
-    if (data?.rows.length > 0) {
-      return {
-        id_usuario: data.rows.item(0).ID_USUARIO,
-        nombres: data.rows.item(0).NOMBRES,
-        tipo_usuario: data.rows.item(0).TIPO_USUARIO,
-        token: data.rows.item(0).TOKEN
-      };
+      if (data?.rows.length > 0) {
+        console.log('tatas: se obtiene usuario logueado');
+        return {
+          id_usuario: data.rows.item(0).ID_USUARIO,
+          nombres: data.rows.item(0).NOMBRES,
+          tipo_usuario: data.rows.item(0).TIPO_USUARIO
+        };
+      }
+      return null;
+    } catch (e) {
+      console.log('tatas: ', JSON.stringify(e));
+      return null;
     }
-    return null;
-  } catch (e) {
-    console.log('tatas: ', JSON.stringify(e));
-    return null;
   }
-}
-
 
 }
