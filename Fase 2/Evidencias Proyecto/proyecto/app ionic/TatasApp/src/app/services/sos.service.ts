@@ -43,11 +43,11 @@ export class SosService {
         tipo_alerta: 4 
       };
 
-      await this.http.post(`${this.baseUrl}/alertas/crear-alerta`, alerta).pipe();
+      await this.http.post(`${this.baseUrl}/alertas/crear-alerta`, alerta).toPromise();
       await this.hablar('Alerta SOS activada');
 
     } catch (err) {
-      console.error("Error al enviar alerta SOS desde botón:", err);
+      console.error("TATAS: Error al enviar alerta SOS desde botón:", err);
     }
   }
 

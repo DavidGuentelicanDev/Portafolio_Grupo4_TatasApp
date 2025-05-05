@@ -1,6 +1,6 @@
 // Servicio para verificar zona segura y enviar alerta push si se sale de ella
-// Creado por Ale - actualizado 03/05/2025
-import { Injectable, inject } from '@angular/core';
+// Creado por Ale - actualizado 04/05/2025 con debug
+import { Injectable } from '@angular/core';
 import { Geolocation } from '@capacitor/geolocation';
 import { TextToSpeech } from '@capacitor-community/text-to-speech';
 import { DbOffService } from '../services/db-off.service';
@@ -8,13 +8,13 @@ import { ApiUsuariosService } from '../services/api-usuarios.service';
 import { HttpClient } from '@angular/common/http';
 import { environmentLocal } from '../config.local';
 
+
 declare var google: any;
 
 @Injectable({
   providedIn: 'root'
 })
 export class ZonaSeguraService {
-
   private id_usuario: number = 0;
   private direccionUsuario: string = '';
   private baseUrl = environmentLocal.URLbase;
@@ -26,41 +26,59 @@ export class ZonaSeguraService {
   ) { }
 
   iniciarVerificacion() {
-    setInterval(async () => {
-      try {
-        const usuario = await this.dbOff.obtenerDatosUsuarioLogueado();
-        if (!usuario) {
-          console.error("No se encontraron datos del usuario.");
-          return;
-        }
+    console.log("TATAS: iniciarVerificacion() ejecutado");
 
-        this.id_usuario = usuario.id_usuario;
+    // Ejecutar inmediatamente para pruebas
+    setTimeout(() => this.verificarZonaSegura(), 2000);
 
-        const datosUsuario: any = await this.http
-          .get(`${this.baseUrl}/usuarios/${this.id_usuario}`)
-          .pipe();
+    // Ejecutar cada 5 minutos
+    setInterval(() => this.verificarZonaSegura(), 5 * 60 * 1000);
+  }
 
-        this.direccionUsuario = datosUsuario?.direccion_rel?.direccion_texto;
-        if (!this.direccionUsuario) throw new Error("Dirección no encontrada");
+  async verificarZonaSegura() {
+    console.log("TATAS: Comienza verificación");
 
-        const zonaSegura = await this.obtenerCoordenadasDesdeDireccion(this.direccionUsuario);
+    try {
+      const usuario = await this.dbOff.obtenerDatosUsuarioLogueado();
+      console.log("TATAS: Usuario obtenido:", usuario);
 
-        const currentPosition = await Geolocation.getCurrentPosition({
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0
-        });
-
-        const actual = {
-          lat: currentPosition.coords.latitude,
-          lng: currentPosition.coords.longitude,
-        };
-
-        this.compararDistancia(actual, zonaSegura);
-      } catch (e) {
-        console.error("Error al verificar zona segura:", e);
+      if (!usuario) {
+        console.error("TATAS: No se encontraron datos del usuario.");
+        return;
       }
-    }, 5 * 60 * 1000); // cada 5 minutos
+
+      this.id_usuario = usuario.id_usuario;
+      console.log("TATAS: ",this.id_usuario)
+
+      const datosUsuario: any = await this.http
+        .get(`${this.baseUrl}/usuarios/${this.id_usuario}`)
+        .toPromise();
+        console.log("TATAS: Respuesta de API:", JSON.stringify(datosUsuario));
+
+
+      this.direccionUsuario = datosUsuario?.direccion_rel?.direccion_texto;
+      if (!this.direccionUsuario) throw new Error("TATAS: Dirección no encontrada");
+
+      const zonaSegura = await this.obtenerCoordenadasDesdeDireccion(this.direccionUsuario);
+      console.log("TATAS: Coordenadas zona segura:", zonaSegura);
+
+      const currentPosition = await Geolocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      });
+
+      const actual = {
+        lat: currentPosition.coords.latitude,
+        lng: currentPosition.coords.longitude,
+      };
+      console.log("TATAS: Posición actual:", actual);
+
+      this.compararDistancia(actual, zonaSegura);
+
+    } catch (e) {
+      console.error("TATAS: Error en verificarZonaSegura:", e);
+    }
   }
 
   async obtenerCoordenadasDesdeDireccion(direccion: string): Promise<{ lat: number, lng: number }> {
@@ -71,7 +89,7 @@ export class ZonaSeguraService {
     if (data.status === 'OK') {
       return data.results[0].geometry.location;
     } else {
-      throw new Error('Error al geocodificar la dirección: ' + data.status);
+      throw new Error('TATAS: Error al geocodificar la dirección: ' + data.status);
     }
   }
 
@@ -81,12 +99,17 @@ export class ZonaSeguraService {
       new google.maps.LatLng(zona.lat, zona.lng)
     );
 
+    console.log("TATAS: Distancia calculada:", distancia);
+
     if (distancia > 100) {
       const mensaje = `Alerta: el adulto mayor salió de la zona segura a ${distancia.toFixed(0)} metros.`;
       const urlUbicacion = `https://www.google.com/maps?q=${actual.lat},${actual.lng}`;
 
+      console.log("TATAS: Distancia supera 100m, enviando alerta...");
       await this.enviarAlerta(actual.lat, actual.lng, urlUbicacion);
       await this.hablar(mensaje);
+    } else {
+      console.log("TATAS: Usuario dentro de zona segura.");
     }
   }
 
@@ -99,9 +122,10 @@ export class ZonaSeguraService {
     };
 
     try {
-      await this.http.post(`${this.baseUrl}/alertas/crear-alerta`, alerta).pipe();
+      const res = await this.http.post(`${this.baseUrl}/alertas/crear-alerta`, alerta).toPromise();
+      console.log("TATAS: Alerta enviada correctamente:", res);
     } catch (err) {
-      console.error('Error al enviar alerta al backend:', err);
+      console.error('TATAS: Error al enviar alerta al backend:', err);
     }
   }
 
@@ -112,11 +136,4 @@ export class ZonaSeguraService {
       rate: 1.0
     });
   }
-
-  //servicio para obtener registro de alertas
-  //creado por ale 04-05-2025
-  // getAlertasPorFamiliar(idFamiliar: number): Promise<any> {
-  //   return this.http.get(`${this.baseUrl}/alertas/crear-alerta/${idFamiliar}`).toPromise();
-  // }
-
 }

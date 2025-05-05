@@ -29,8 +29,14 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    loadGoogleMaps(environmentLocal.googleMapsApiKey); //carga la api de google maps
-    this.zonaSegura.iniciarVerificacion(); //inicia la verificacion de la zona segura en segundo plano
+    try {
+      console.log("TATAS: AppComponent iniciado");
+      loadGoogleMaps(environmentLocal.googleMapsApiKey);
+      this.zonaSegura.iniciarVerificacion();
+    } catch (err) {
+      console.error("TATAS: Error en ngOnInit AppComponent", err);
+    }
   }
+  
 
 }
