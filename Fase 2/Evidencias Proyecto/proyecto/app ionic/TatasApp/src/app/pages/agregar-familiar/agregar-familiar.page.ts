@@ -6,10 +6,11 @@ import { DbOffService } from 'src/app/services/db-off.service';
 import { ApiFamiliaresService } from 'src/app/services/api-familiares.service';
 import { FamiliarRegistro, FamiliarRegistrado } from 'src/app/interfaces/familiar';
 import { NavigationExtras, Router } from '@angular/router';
-//para los contactos
 import { Contacts, Contact, ContactFieldType } from '@awesome-cordova-plugins/contacts/ngx';
 import { Platform } from '@ionic/angular';
 import { lastValueFrom } from 'rxjs';
+import { LoadingController, AlertController } from '@ionic/angular';
+
 
 @Component({
   selector: 'app-agregar-familiar',
@@ -21,11 +22,12 @@ import { lastValueFrom } from 'rxjs';
 })
 export class AgregarFamiliarPage implements OnInit {
 
-  idUsuarioRegistrado: number = 0; //usuario registrado
+  idUsuarioLogueado: number = 0; //usuario registrado
   contactos: { nombre: string; numero: string }[] = []; // Contactos del teléfono
   contactosApi: { telefono: string; id_usuario: number }[] = []; //contactos que vienen de la api
-  contactosCoincidentes: { nombre: string; numero: string; id_usuario: number }[] = []; // Contactos que coinciden entre teléfono y API
+  contactosCoincidentes: { nombre: string; numero: string; id_usuario: number; bloqueado: boolean }[] = []; // Contactos que coinciden entre teléfono y API
   contactosSeleccionados: { nombre: string; numero: string; id_usuario: number }[] = []; //contactos seleccionados para agregar al grupo familiar
+  familiaresRegistrados: { id_usuario: number }[] = []; //familiares registrados por el adulto mayor
 
   //modelo para agregar familiar
   //creado por david el 02/05
@@ -39,7 +41,9 @@ export class AgregarFamiliarPage implements OnInit {
     private apiFamiliares: ApiFamiliaresService,
     private router: Router,
     private contacts: Contacts,
-    private platform: Platform
+    private platform: Platform,
+    private loadingController: LoadingController,
+    private alertController: AlertController
   ) { }
 
   async ngOnInit() {
@@ -58,8 +62,8 @@ export class AgregarFamiliarPage implements OnInit {
   async obtenerIdUsuarioLogueado() {
     let usuario = await this.dbOff.obtenerDatosUsuarioLogueado();
     if (usuario) {
-      this.idUsuarioRegistrado = usuario.id_usuario; //asignar id de usuario registrado
-      console.log("tatas: ID USUARIO REGISTRADO: ", this.idUsuarioRegistrado);
+      this.idUsuarioLogueado = usuario.id_usuario; //asignar id de usuario registrado
+      console.log("tatas: ID USUARIO REGISTRADO: ", this.idUsuarioLogueado);
     } else {
       console.log("tatas: NO HAY USUARIO REGISTRADO");
       let extras: NavigationExtras = {replaceUrl: true};
@@ -112,17 +116,19 @@ export class AgregarFamiliarPage implements OnInit {
   compararContactos() {
     this.contactosCoincidentes = this.contactos
       .map(contacto => {
-        const coincidencia = this.contactosApi.find(api => api.telefono === contacto.numero);
+        let coincidencia = this.contactosApi.find(api => api.telefono === contacto.numero);
         if (coincidencia) {
+          let yaRegistrado = this.familiaresRegistrados.some(familiar => familiar.id_usuario === coincidencia.id_usuario);
           return {
             nombre: contacto.nombre,
             numero: contacto.numero,
-            id_usuario: coincidencia.id_usuario
+            id_usuario: coincidencia.id_usuario,
+            bloqueado: yaRegistrado //agregar propiedad que bloquea al contacto en la pantalla
           };
         }
         return null;
       })
-      .filter(c => c !== null) as { nombre: string; numero: string; id_usuario: number }[];
+      .filter(c => c !== null) as { nombre: string; numero: string; id_usuario: number; bloqueado: boolean }[];
   }
 
   // Ejecuta toda la lógica
@@ -130,8 +136,9 @@ export class AgregarFamiliarPage implements OnInit {
   async obtenerCoincidencias() {
     await this.obtenerContactos();
     await this.obtenerContactosApi();
+    await this.obtenerFamiliaresRegistrados();
     this.compararContactos();
-    console.log("tatas contactos coincidentes" + JSON.stringify(this.contactosCoincidentes));
+    console.log("tatas CONTACTOS COINCIDENTES", JSON.stringify(this.contactosCoincidentes));
   }
 
   // Normaliza números quitando +56 y símbolos
@@ -146,9 +153,13 @@ export class AgregarFamiliarPage implements OnInit {
 
   //funcion para seleccionar contactos
   //creado por david el 03/05
-  seleccionarContacto(contacto: { nombre: string; numero: string; id_usuario: number }) {
-    const index = this.contactosSeleccionados.findIndex(c => c.numero === contacto.numero);
-  
+  seleccionarContacto(contacto: { nombre: string; numero: string; id_usuario: number; bloqueado: boolean }) {
+    if (contacto.bloqueado) {
+      console.log("Este contacto ya está registrado y no se puede seleccionar");
+      return; //no permite seleccionar el contacto si esta bloqueado
+    }
+
+    let index = this.contactosSeleccionados.findIndex(c => c.numero === contacto.numero);
     if (index > -1) {
       this.contactosSeleccionados.splice(index, 1); //ya estaba seleccionado, se quita
       console.log(`tatas Contacto deseleccionado - ID: ${contacto.id_usuario}`);
@@ -160,16 +171,24 @@ export class AgregarFamiliarPage implements OnInit {
 
   //llamar funcion seleccionarContacto al hacer click en el contacto
   //creado por david el 03/05
-  estaSeleccionado(contacto: { nombre: string; numero: string; id_usuario: number }): boolean {
+  estaSeleccionado(contacto: { nombre: string; numero: string; id_usuario: number; bloqueado: boolean }): boolean {
     return this.contactosSeleccionados.some(c => c.numero === contacto.numero);
   }
 
   //funcion para registrar familiares
   //creada por david el 03/05
   async agregarFamiliares() {
+    //muestra el loading al agregar familiares
+    let loading = await this.loadingController.create({
+      message: 'Agregando familiar...',
+      backdropDismiss: false, //bloquea la pantalla
+      spinner: 'circles',
+    });
+    await loading.present();
+
     for (let contacto of this.contactosSeleccionados) {
       let familiar: FamiliarRegistro = {
-        idAdultoMayor: this.idUsuarioRegistrado,
+        idAdultoMayor: this.idUsuarioLogueado,
         idFamiliar: contacto.id_usuario
       };
   
@@ -182,12 +201,52 @@ export class AgregarFamiliarPage implements OnInit {
         if (json.status == "success") {
           console.log("tatas:", json.message);
         }
-      } catch (error: any) {
-        let respuestaError = JSON.parse(JSON.stringify(error.error));
+      } catch (e: any) {
+        let respuestaError = JSON.parse(JSON.stringify(e.error));
         console.log("tatas:", respuestaError.message);
+        //alerta
+        let alerta = await this.alertController.create({
+          header: "Error",
+          message: "Hubo un error al agregar a los familiares seleccionados. Inténtelo más tarde",
+          buttons: ['OK']
+        });
+        await alerta.present();
       }
     }
     console.log("tatas: Proceso de registro de familiares completado.");
+    await loading.dismiss(); //cierra el loading
+    //alerta
+    let alerta = await this.alertController.create({
+      header: "Éxito",
+      message: "Familiares agregados exitosamente"
+    });
+    await alerta.present();
+
+    setTimeout(async() => {
+      this.regresarFamiliares();
+      await alerta.dismiss();
+    }, 1000);
+  }
+
+  //obtener los familiares registrados por este adulto mayor para bloquear los que ya estan registrados
+  //creado por david el 07/05
+  async obtenerFamiliaresRegistrados() {
+    try {
+      let data = await lastValueFrom(this.apiFamiliares.obtenerFamiliaresRegistrados(this.idUsuarioLogueado));
+      this.familiaresRegistrados = data.map(familiar => ({
+        id_usuario: familiar.familiar_rel.id_usuario
+      }));
+      console.log("tatas FAMILIARES YA AGREGADOS: ", this.familiaresRegistrados);
+    } catch (e) {
+      console.error("tatas Error al obtener familiares registrados:", e);
+    }
+  }
+
+  //navegar a pagina central de familiares
+  //creado por david el 07/05
+  regresarFamiliares() {
+    let extras: NavigationExtras = {replaceUrl: true};
+    this.router.navigate(["familiares"], extras);
   }
 
 }

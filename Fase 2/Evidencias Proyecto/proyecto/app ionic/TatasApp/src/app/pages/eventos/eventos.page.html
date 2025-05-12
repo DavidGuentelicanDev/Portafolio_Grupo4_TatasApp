@@ -1,11 +1,16 @@
-<ion-header [translucent]="true">
+<ion-header class="encabezado-registro">
   <ion-toolbar>
-    <ion-title>Eventos</ion-title>
+    <ion-title class="titulo-registro">Eventos</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  Aquí se vería el listado de eventos.
+<ion-content class="fondo-calendario">
+  <full-calendar 
+    [options]="calendarOptions"
+    (eventClick)="handleEventClick($event)">
+  </full-calendar>
 
-  <ion-button expand="block" (click)="navegarCrearEvento()" class="ion-padding">Crear Evento</ion-button>
+  <ion-button expand="block" class="boton-crear-evento" (click)="navegarCrearEvento()">
+    Crear Nuevo Evento
+  </ion-button>
 </ion-content>

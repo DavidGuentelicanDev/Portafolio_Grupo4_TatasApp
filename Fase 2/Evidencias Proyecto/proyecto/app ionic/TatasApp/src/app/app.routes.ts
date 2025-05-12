@@ -45,9 +45,43 @@ export const routes: Routes = [
   {
     path: 'agregar-familiar',
     loadComponent: () => import('./pages/agregar-familiar/agregar-familiar.page').then( m => m.AgregarFamiliarPage)
-  },  {
+  },
+  {
     path: 'registro-alarmas',
     loadComponent: () => import('./pages/registro-alarmas/registro-alarmas.page').then( m => m.RegistroAlarmasPage)
   },
+  {
+    path: 'configuracion',
+    loadComponent: () => import('./pages/configuracion/configuracion.page').then( m => m.ConfiguracionPage)
+  },
+  {
+    path: 'foto-perfil',
+    loadComponent: () => import('./pages/foto-perfil/foto-perfil.page').then( m => m.FotoPerfilPage)
+  },
+  {
+    path: 'editar-datos-usuario',
+    loadComponent: () => import('./pages/editar-datos-usuario/editar-datos-usuario.page').then( m => m.EditarDatosUsuarioPage)
+  },
+  {
+    path: 'editar-correo',
+    loadComponent: () => import('./pages/editar-correo/editar-correo.page').then( m => m.EditarCorreoPage)
+  },
+  {
+    path: 'editar-contrasena',
+    loadComponent: () => import('./pages/editar-contrasena/editar-contrasena.page').then( m => m.EditarContrasenaPage)
+  },
+  {
+    path: 'evento-familiar',
+    loadComponent: () => import('./pages/evento-familiar/evento-familiar.page').then( m => m.EventoFamiliarPage)
+  },
+  {
+    path: 'modificar-evento/:id',
+    loadComponent: () => import('./pages/modificar-evento/modificar-evento.page').then( m => m.ModificarEventoPage)
+  },  {
+    path: 'home-tata',
+    loadComponent: () => import('./pages/home-tata/home-tata.page').then( m => m.HomeTataPage)
+  },
+
+
 
 ];

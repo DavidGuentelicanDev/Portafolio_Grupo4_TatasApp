@@ -37,3 +37,46 @@ export interface UsuarioLogueado {
     nombres: string
     tipo_usuario: number
 }
+
+//interfaz para obtener los datos de usuario por id
+//creado por david el 07/05
+export interface UsuariosPorId {
+    nombres: string
+    apellidos: string
+    fecha_nacimiento: Date
+    correo: string
+    tipo_usuario: number
+    direccion_rel: Direccion
+}
+
+//interfaz para actualizar foto de perfil
+//creado por david el 09/05
+export interface FotoPerfil {
+    id: number;
+    foto_perfil: string;
+}
+
+//interfaz para editar datos de usuario
+//creado por david el 09/05
+export interface DatosUsuarioEditar {
+    id: number;
+    nombres: string;
+    apellidos: string;
+    fecha_nacimiento: string;
+    telefono: string
+    direccion: Direccion
+}
+
+//interfaz para editar correo
+//creado por david el 10/05
+export interface CorreoEditar {
+    id: number;
+    correo: string;
+}
+
+//interfaz para editar contraseña
+//creado por david el 11/05
+export interface ContrasenaEditar {
+    id: number;
+    contrasena: string;
+}
