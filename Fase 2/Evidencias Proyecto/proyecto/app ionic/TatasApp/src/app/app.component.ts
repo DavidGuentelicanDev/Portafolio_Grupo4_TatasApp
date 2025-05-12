@@ -2,20 +2,24 @@ import { Component, OnInit } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { environmentLocal } from './config.local';
 import { ZonaSeguraService } from './services/zona-segura.service';
+import { NotificacionesAlertasService } from './services/notificaciones-alertas.service';
+import { SplashScreen } from '@capacitor/splash-screen';
+
 
 //funcion para poder cargar la api de google maps
 export function loadGoogleMaps(apiKey: string) {
   const script = document.createElement('script');
-  script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=geometry`;
+  script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=geometry,places`;
   script.defer = true;
   script.async = true;
 
   script.onerror = () => {
-    console.error("Error al cargar Google Maps");
+    console.error("tatas Error al cargar Google Maps");
   };
 
   document.head.appendChild(script);
 }
+
 
 @Component({
   selector: 'app-root',
@@ -25,18 +29,30 @@ export function loadGoogleMaps(apiKey: string) {
 export class AppComponent implements OnInit {
 
   constructor(
-    private zonaSegura: ZonaSeguraService
-  ) {}
+    private zonaSegura: ZonaSeguraService,
+    private notificacionesAlertas: NotificacionesAlertasService
+  ) {
+    this.mostrarSplash(); //para que el splash aparezca al iniciar
+  }
 
   ngOnInit() {
     try {
       console.log("TATAS: AppComponent iniciado");
       loadGoogleMaps(environmentLocal.googleMapsApiKey);
       this.zonaSegura.iniciarVerificacion();
+      this.notificacionesAlertas.iniciarConsultaAutomaticaAlertas();
     } catch (err) {
       console.error("TATAS: Error en ngOnInit AppComponent", err);
     }
   }
-  
+
+  //funcion para mostrar el splash screen
+  //creada por david el 09/05
+  async mostrarSplash() {
+    await SplashScreen.show({
+      autoHide: true,
+      showDuration: 3000
+    });
+  }
 
 }

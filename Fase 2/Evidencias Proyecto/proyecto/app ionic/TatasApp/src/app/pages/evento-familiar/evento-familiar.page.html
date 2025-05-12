@@ -1,0 +1,13 @@
+<ion-header class="encabezado-registro">
+  <ion-toolbar>
+    <ion-title class="titulo-registro">Eventos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="fondo-calendario">
+  <full-calendar 
+    [options]="calendarOptions"
+    (eventClick)="handleEventClick($event)">
+  </full-calendar>
+
+</ion-content>

@@ -62,7 +62,7 @@ export class SosService {
   //servicio para obtener registro de alertas
   //creado por ale 04-05-2025
   // getAlertasPorFamiliar(idFamiliar: number): Promise<any> {
-  //   return this.http.get(`${this.baseUrl}/alertas/crear-alerta/${idFamiliar}`).toPromise();
+  //   return this.http.get(${this.baseUrl}/alertas/crear-alerta/${idFamiliar}).toPromise();
   // }
 
 }
