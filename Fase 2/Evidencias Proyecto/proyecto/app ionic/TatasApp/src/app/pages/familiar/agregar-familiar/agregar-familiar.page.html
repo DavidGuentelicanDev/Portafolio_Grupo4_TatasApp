@@ -1,0 +1,33 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Agregar Familiares</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-list>
+    <ion-item
+      *ngFor="let contacto of contactosCoincidentes"
+      [disabled]="contacto.bloqueado"
+      (click)="seleccionarContacto(contacto)"
+      [class.bloqueado]="contacto.bloqueado">
+      <!-- Círculo de selección -->
+      <ion-icon
+        [name]="estaSeleccionado(contacto) ? 'radio-button-on' : 'radio-button-off'"
+        slot="start"
+        [color]="contacto.bloqueado ? 'medium' : 'primary'"
+        size="large">
+      </ion-icon>
+
+      <ion-label>
+        <h2>{{ contacto.nombre }}</h2>
+        <p>
+          {{ contacto.numero }}
+          <span *ngIf="contacto.bloqueado" class="bloqueado-texto">(Ya agregado)</span>
+        </p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ion-button expand="block" class="ion-padding" (click)="agregarFamiliares()">Guardar</ion-button>
+</ion-content>
