@@ -10,7 +10,8 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from fastapi.responses import JSONResponse
 import re
-from datetime import datetime
+from datetime import datetime, timezone
+import pytz
 
 
 #SCHEMAS DE REGISTRO DE USUARIO
@@ -124,7 +125,7 @@ def crear_respuesta_json(
 #agregado por andrea 29/04/2025
 
 def fecha_futura_valida(fecha: datetime, field_name: str = 'fecha') -> datetime:
-    ahora = datetime.now().replace(tzinfo=None)
+    ahora = datetime.now(timezone.utc)
     if fecha < ahora:
         raise ValueError(f"La {field_name} debe ser igual o posterior a la fecha y hora actual")
     return fecha
@@ -142,3 +143,11 @@ def opcion_en_lista_valida(v: int, opciones: list[int], field_name: str = 'campo
 # Decorador para ver si la opcion de tipo evento esta dentro ded la lista permitida, 
 def validador_opcion_en_lista(campo: str, opciones: list[int]):
     return field_validator(campo)(lambda cls, v, info: opcion_en_lista_valida(v, opciones, info.field_name))
+
+#convierte la fecha y hora a horario chile (utc-4 invierno, utc-3 verano)
+#creado por david el 25/05
+def convertir_hora_tz_chile(dt_utc):
+    chile_tz = pytz.timezone("America/Santiago")
+    if dt_utc.tzinfo is None:
+        dt_utc = dt_utc.replace(tzinfo=pytz.utc)
+    return dt_utc.astimezone(chile_tz)

@@ -40,6 +40,7 @@ def crear_evento(evento: EventoCreate, db: Session = Depends(get_db)):
             detail=f"Error al crear evento: {str(e)}"
         )
 
+#######################################################################################################
 
 # ruta get para listar eventos
 # creada por Andrea 9/05/2025
@@ -63,6 +64,7 @@ def listar_eventos(
         for e in eventos
     ]
 
+#######################################################################################################
 
 # ruta delete para eliminar eventos
 # creada por Andrea 9/05/2025
@@ -98,6 +100,9 @@ def modificar_evento(evento_id: int, datos: EventoUpdate, db: Session = Depends(
         "message": "Evento modificado correctamente",
         "evento_id": evento.id
     }
+
+#######################################################################################################
+
 # ruta para traer eventos del adulto mayor segun id familiar
 # creada por Andrea 9/05/2025
 @eventos_router.get("/listar-por-familiar", response_model=List[EventoOut])
@@ -111,6 +116,36 @@ def listar_eventos_por_familiar(
         raise HTTPException(status_code=404, detail="No se encontró adulto mayor asociado")
 
     eventos = db.query(Evento).filter(Evento.usuario_id == relacion.adulto_mayor_id).all()
+
+    return [
+        EventoOut(
+            id=e.id,
+            usuario_id=e.usuario_id,
+            nombre=e.nombre,
+            descripcion=e.descripcion,
+            fecha_hora=e.fecha_hora,
+            tipo_evento=e.tipo_evento,
+            tipo_evento_nombre=e.tipo_evento_nombre
+        )
+        for e in eventos
+    ]
+
+@eventos_router.get("/proximos", response_model=List[EventoOut])
+def obtener_eventos_proximos(
+    usuario_id: int = Query(..., description="ID del usuario logueado"),
+    minutos: int = Query(15, description="Minutos hacia el futuro para buscar eventos"),
+    db: Session = Depends(get_db)
+):
+    from datetime import datetime, timedelta
+
+    ahora = datetime.now()
+    en_minutos = ahora + timedelta(minutes=minutos)
+
+    eventos = db.query(Evento).filter(
+        Evento.usuario_id == usuario_id,
+        Evento.fecha_hora >= ahora,
+        Evento.fecha_hora <= en_minutos
+    ).all()
 
     return [
         EventoOut(
